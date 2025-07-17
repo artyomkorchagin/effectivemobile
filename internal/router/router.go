@@ -2,18 +2,19 @@ package router
 
 import (
 	"log"
+	"net/http"
 
 	"github.com/artyomkorchagin/effectivemobile/internal/middleware"
-	"github.com/artyomkorchagin/effectivemobile/internal/services/subscription"
+	servicesubscription "github.com/artyomkorchagin/effectivemobile/internal/services/subscription"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	subscriptionService *subscription.Service
+	subscriptionService *servicesubscription.Service
 	logger              *log.Logger
 }
 
-func NewHandler(subscriptionService *subscription.Service, logger *log.Logger) *Handler {
+func NewHandler(subscriptionService *servicesubscription.Service, logger *log.Logger) *Handler {
 	return &Handler{
 		subscriptionService: subscriptionService,
 		logger:              logger,
@@ -29,14 +30,14 @@ func (h *Handler) InitRouter() *gin.Engine {
 	main := router.Group("/")
 	{
 		// basic CRUDL routes
-		main.GET("/subscription/:id", func(c *gin.Context) {})
-		main.POST("/subscription", h.AddSubscription)
-		main.PUT("/subscription/:id", func(c *gin.Context) {})
-		main.DELETE("/subscription/:id", func(c *gin.Context) {})
-		main.GET("/subscriptions", func(c *gin.Context) {})
+		main.GET("/subscription/:id", h.wrap(h.getSubscription))
+		main.POST("/subscription", h.wrap(h.createSubscription))
+		main.PUT("/subscription", h.wrap(h.updateSubscription))
+		main.DELETE("/subscription/:id", h.wrap(h.deleteSubscription))
+		main.GET("/subscriptions", h.wrap(h.getAllSubscriptions))
 
 		main.GET("/status", func(c *gin.Context) {
-			c.JSON(200, gin.H{"status": "ok"})
+			c.JSON(http.StatusOK, gin.H{"status": "ok"})
 		})
 	}
 

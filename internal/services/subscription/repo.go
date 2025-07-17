@@ -1,4 +1,4 @@
-package subscription
+package servicesubscription
 
 import (
 	"context"
@@ -8,10 +8,13 @@ import (
 
 type Reader interface {
 	GetAllSubscriptions(ctx context.Context) ([]*types.Subscription, error)
+	GetSubscription(ctx context.Context, subscriptionID uint64) (*types.Subscription, error)
 }
 
 type Writer interface {
-	AddSubscription(ctx context.Context, scr *types.SubscriptionCreateRequest) error
+	CreateSubscription(ctx context.Context, scr *types.SubscriptionCreateRequest) error
+	DeleteSubscription(ctx context.Context, subscriptionID uint64) error
+	UpdateSubscription(ctx context.Context, sub *types.Subscription) error
 }
 
 type ReadWriter interface {

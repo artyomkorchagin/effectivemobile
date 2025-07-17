@@ -21,6 +21,6 @@ func New() Logger {
 	return Logger{logger, f}
 }
 
-func (l Logger) CloseLogger() {
+func (l Logger) Close() {
 	l.file.Close()
 }

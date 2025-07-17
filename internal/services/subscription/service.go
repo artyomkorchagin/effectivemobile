@@ -1,4 +1,4 @@
-package subscription
+package servicesubscription
 
 type Service struct {
 	repo ReadWriter
