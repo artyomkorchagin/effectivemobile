@@ -13,6 +13,13 @@ type Handler struct {
 	logger              *log.Logger
 }
 
+func NewHandler(subscriptionService *subscription.Service, logger *log.Logger) *Handler {
+	return &Handler{
+		subscriptionService: subscriptionService,
+		logger:              logger,
+	}
+}
+
 func (h *Handler) InitRouter() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
@@ -23,7 +30,7 @@ func (h *Handler) InitRouter() *gin.Engine {
 	{
 		// basic CRUDL routes
 		main.GET("/subscription/:id", func(c *gin.Context) {})
-		main.POST("/subscription", func(c *gin.Context) {})
+		main.POST("/subscription", h.AddSubscription)
 		main.PUT("/subscription/:id", func(c *gin.Context) {})
 		main.DELETE("/subscription/:id", func(c *gin.Context) {})
 		main.GET("/subscriptions", func(c *gin.Context) {})
