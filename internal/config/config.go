@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	"github.com/artyomkorchagin/effectivemobile/helpers"
+	"github.com/artyomkorchagin/effectivemobile/pkg/helpers"
 )
 
 func GetDSN() string {

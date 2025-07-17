@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
+	"github.com/artyomkorchagin/effectivemobile/internal/router"
+	"github.com/artyomkorchagin/effectivemobile/pkg/logger"
 	"github.com/joho/godotenv"
 )
 
@@ -14,5 +15,10 @@ func init() {
 }
 
 func main() {
-	fmt.Println("Hello World")
+	logger := logger.New()
+	defer logger.CloseLogger()
+
+	handler := router.NewHandler(nil, logger.Logger)
+	r := handler.InitRouter()
+	r.Run(":3000")
 }

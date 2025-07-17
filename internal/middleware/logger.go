@@ -23,14 +23,13 @@ func LoggerMiddleware(logger *log.Logger) gin.HandlerFunc {
 
 		msg := fmt.Sprintf(
 			"[GIN] %s | %3d | %13v | %15s | %-7s %s",
-			time.Now().Format("01.02.2006 - 15:04:05"),
+			time.Now().Format("02.01.2006 - 15:04:05"),
 			statusCode,
 			latency,
 			clientIP,
 			method,
 			path,
 		)
-
 		log.Println(msg)
 		logger.Println(msg)
 	}
