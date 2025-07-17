@@ -1,33 +1,30 @@
 package types
 
 type Subscription struct {
-	ID           string
-	Service_name string
-	User_uuid    string
-	Start_date   string
-	End_date     string
+	ID          string
+	ServiceName string
+	UserUUID    string
+	StartDate   string
+	EndDate     string
 }
 
 type SubscriptionCreateRequest struct {
-	Service_name string
-	User_uuid    string
-	Start_date   string
-	End_date     string
+	ServiceName string
+	UserUUID    string
+	StartDate   string
+	EndDate     string
 }
 
-func NewSubscription(s SubscriptionCreateRequest) Subscription {
-	// generate uuid for subscription here
-	uuid := "some uuid"
-	return Subscription{
-		ID:           uuid,
-		Service_name: s.Service_name,
-		User_uuid:    s.User_uuid,
-		Start_date:   s.Start_date,
-		End_date:     s.End_date,
+func NewSubscriptionCreateRequest(serviceName, userUUID, startDate, endDate string) SubscriptionCreateRequest {
+	return SubscriptionCreateRequest{
+		ServiceName: serviceName,
+		UserUUID:    userUUID,
+		StartDate:   startDate,
+		EndDate:     endDate,
 	}
 }
 
-func (s Subscription) JSON() string {
-	// jsonify entity for request here
+func (s SubscriptionCreateRequest) JSON() string {
+	// jsonify request entity for request here
 	return ""
 }
