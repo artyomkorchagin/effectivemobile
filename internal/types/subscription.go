@@ -3,6 +3,7 @@ package types
 type Subscription struct {
 	ID          string
 	ServiceName string
+	Price       string
 	UserUUID    string
 	StartDate   string
 	EndDate     string
@@ -10,14 +11,16 @@ type Subscription struct {
 
 type SubscriptionCreateRequest struct {
 	ServiceName string
+	Price       string
 	UserUUID    string
 	StartDate   string
 	EndDate     string
 }
 
-func NewSubscriptionCreateRequest(serviceName, userUUID, startDate, endDate string) SubscriptionCreateRequest {
+func NewSubscriptionCreateRequest(serviceName, price, userUUID, startDate, endDate string) SubscriptionCreateRequest {
 	return SubscriptionCreateRequest{
 		ServiceName: serviceName,
+		Price:       price,
 		UserUUID:    userUUID,
 		StartDate:   startDate,
 		EndDate:     endDate,

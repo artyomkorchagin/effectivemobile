@@ -1,4 +1,4 @@
-package psqlSubsription
+package psqlsubscription
 
 import "database/sql"
 
