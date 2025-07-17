@@ -28,5 +28,6 @@ func NewSubscription(s SubscriptionCreateRequest) Subscription {
 }
 
 func (s Subscription) JSON() string {
-
+	// jsonify entity for request here
+	return ""
 }
