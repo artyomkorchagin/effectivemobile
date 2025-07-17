@@ -7,7 +7,7 @@ import (
 )
 
 type Reader interface {
-	GetAllSubscriptions(ctx context.Context) ([]types.Subscription, error)
+	GetAllSubscriptions(ctx context.Context) ([]*types.Subscription, error)
 }
 
 type Writer interface {

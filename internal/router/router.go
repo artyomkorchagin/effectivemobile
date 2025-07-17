@@ -2,15 +2,15 @@ package router
 
 import (
 	"log"
-	"os"
-	"path"
 
+	"github.com/artyomkorchagin/effectivemobile/internal/middleware"
+	"github.com/artyomkorchagin/effectivemobile/internal/services/subscription"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	subscriptionServices *
-	logger   *log.Logger
+	subscriptionService *subscription.Service
+	logger              *log.Logger
 }
 
 func (h *Handler) InitRouter() *gin.Engine {
@@ -18,7 +18,6 @@ func (h *Handler) InitRouter() *gin.Engine {
 	router := gin.New()
 
 	router.Use(middleware.LoggerMiddleware(h.logger))
-
 
 	return router
 }
