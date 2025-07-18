@@ -35,6 +35,7 @@ func (h *Handler) InitRouter() *gin.Engine {
 		main.PUT("/subscription", h.wrap(h.updateSubscription))
 		main.DELETE("/subscription/:id", h.wrap(h.deleteSubscription))
 		main.GET("/subscriptions", h.wrap(h.getAllSubscriptions))
+		main.GET("/sum-of-subscriptions", h.wrap(h.getSumOfSubscriptions))
 
 		main.GET("/status", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"status": "ok"})

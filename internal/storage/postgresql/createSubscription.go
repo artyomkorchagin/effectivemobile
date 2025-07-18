@@ -32,7 +32,7 @@ func (r *Repository) CreateSubscription(ctx context.Context, scr *types.Subscrip
 	}
 
 	const query = `
-        INSERT INTO subscriptions (service_name, price, user_uuid, start_date, end_date)
+        INSERT INTO subscriptions (service_name, price, user_id, start_date, end_date)
         VALUES ($1, $2, $3, $4, $5)`
 
 	_, err = r.db.ExecContext(ctx, query,

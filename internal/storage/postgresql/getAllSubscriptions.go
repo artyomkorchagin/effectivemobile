@@ -18,7 +18,7 @@ func (r *Repository) GetAllSubscriptions(ctx context.Context) ([]*types.Subscrip
 	)
 
 	query := `
-        SELECT id, service_name, price, user_uuid, start_date, end_date
+        SELECT id, service_name, price, user_id, start_date, end_date
         FROM subscriptions`
 
 	rows, err := r.db.QueryContext(ctx, query)

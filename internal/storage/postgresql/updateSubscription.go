@@ -33,7 +33,7 @@ func (r *Repository) UpdateSubscription(ctx context.Context, sub *types.Subscrip
 
 	const query = `
         UPDATE subscriptions
-        SET service_name = $1, price = $2, user_uuid = $3, start_date = $4, end_date = $5
+        SET service_name = $1, price = $2, user_id = $3, start_date = $4, end_date = $5
         WHERE id = $6`
 
 	_, err = r.db.ExecContext(ctx, query,

@@ -17,7 +17,7 @@ func (r *Repository) GetSubscription(ctx context.Context, subscriptionID uint64)
 		startDateTime time.Time
 	)
 	query := `
-        SELECT service_name, price, user_uuid, start_date, end_date
+        SELECT service_name, price, user_id, start_date, end_date
         FROM subscriptions
         WHERE id = $1`
 

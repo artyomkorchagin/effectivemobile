@@ -26,8 +26,3 @@ func NewSubscriptionCreateRequest(serviceName, userUUID, startDate, endDate stri
 		EndDate:     endDate,
 	}
 }
-
-func (s SubscriptionCreateRequest) JSON() string {
-	// jsonify request entity for request here
-	return ""
-}
