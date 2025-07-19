@@ -1,0 +1,375 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Effective Mobile Task GO Junior",
+        "contact": {
+            "name": "Artyom Korchagin",
+            "email": "artyomkorchagin333@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:3000",
+    "basePath": "/",
+    "paths": {
+        "/subscriptions": {
+            "get": {
+                "description": "Retrieve a list of all subscriptions",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Get all subscriptions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/types.Subscription"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new subscription",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Create a subscription",
+                "parameters": [
+                    {
+                        "description": "Create subscription",
+                        "name": "subscription",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.SubscriptionCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update only the provided fields of a subscription",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Partially update a subscription",
+                "parameters": [
+                    {
+                        "description": "Fields to update",
+                        "name": "subscription",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.SubscriptionUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/subscriptions/sum": {
+            "get": {
+                "description": "Calculate the total revenue from subscriptions matching the filter",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Get total sum of subscriptions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Service Name",
+                        "name": "service_name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start Date (format: MM-YYYY)",
+                        "name": "start_date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End Date (format: MM-YYYY)",
+                        "name": "end_date",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "number",
+                                "format": "float64"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/subscriptions/{id}": {
+            "get": {
+                "description": "Retrieve a subscription by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Get a subscription by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Subscription ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Subscription"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a subscription by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "subscription"
+                ],
+                "summary": "Delete a subscription",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Subscription ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.HTTPError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "router.HTTPError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "err": {}
+            }
+        },
+        "types.Subscription": {
+            "type": "object",
+            "required": [
+                "id",
+                "price",
+                "service_name",
+                "start_date",
+                "user_id"
+            ],
+            "properties": {
+                "end_date": {
+                    "description": "End date of the subscription in \"MM-YYYY\" format",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Unique identifier for the subscription",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "Monthly price of the subscription in USD cents or integer units",
+                    "type": "integer"
+                },
+                "service_name": {
+                    "description": "Name of the service",
+                    "type": "string"
+                },
+                "start_date": {
+                    "description": "Start date of the subscription in \"MM-YYYY\" format",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "Unique identifier of the user who owns this subscription",
+                    "type": "string"
+                }
+            }
+        },
+        "types.SubscriptionCreateRequest": {
+            "type": "object",
+            "required": [
+                "price",
+                "service_name",
+                "start_date",
+                "user_id"
+            ],
+            "properties": {
+                "end_date": {
+                    "description": "End date of the subscription in \"MM-YYYY\" format; optional",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "Monthly price of the subscription in rubles",
+                    "type": "integer"
+                },
+                "service_name": {
+                    "description": "Name of the service",
+                    "type": "string"
+                },
+                "start_date": {
+                    "description": "Start date of the subscription in \"MM-YYYY\" format",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "Unique identifier of the user who owns this subscription (uuid)",
+                    "type": "string"
+                }
+            }
+        },
+        "types.SubscriptionUpdateRequest": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "end_date": {
+                    "description": "EndDate is the new end date in \"MM-YYYY\" format (optional)\nExample: \"02-2025\"",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID is the unique identifier of the subscription to update\nRequired: yes",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "Price is the new monthly price in USD cents or integer units (optional)\nExample: 1000",
+                    "type": "integer"
+                },
+                "service_name": {
+                    "description": "ServiceName is the new name of the service (optional)\nExample: \"Yandex Plus\"",
+                    "type": "string"
+                },
+                "start_date": {
+                    "description": "StartDate is the new start date in \"MM-YYYY\" format (optional)\nExample: \"01-2025\"",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "UserUUID is the new unique identifier of the user (optional)\nExample: \"123e4567-e89b-42d3-a456-556642440000\"",
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

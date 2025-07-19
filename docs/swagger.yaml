@@ -1,0 +1,267 @@
+basePath: /
+definitions:
+  router.HTTPError:
+    properties:
+      code:
+        type: integer
+      err: {}
+    type: object
+  types.Subscription:
+    properties:
+      end_date:
+        description: End date of the subscription in "MM-YYYY" format
+        type: string
+      id:
+        description: Unique identifier for the subscription
+        type: integer
+      price:
+        description: Monthly price of the subscription in USD cents or integer units
+        type: integer
+      service_name:
+        description: Name of the service
+        type: string
+      start_date:
+        description: Start date of the subscription in "MM-YYYY" format
+        type: string
+      user_id:
+        description: Unique identifier of the user who owns this subscription
+        type: string
+    required:
+    - id
+    - price
+    - service_name
+    - start_date
+    - user_id
+    type: object
+  types.SubscriptionCreateRequest:
+    properties:
+      end_date:
+        description: End date of the subscription in "MM-YYYY" format; optional
+        type: string
+      price:
+        description: Monthly price of the subscription in rubles
+        type: integer
+      service_name:
+        description: Name of the service
+        type: string
+      start_date:
+        description: Start date of the subscription in "MM-YYYY" format
+        type: string
+      user_id:
+        description: Unique identifier of the user who owns this subscription (uuid)
+        type: string
+    required:
+    - price
+    - service_name
+    - start_date
+    - user_id
+    type: object
+  types.SubscriptionUpdateRequest:
+    properties:
+      end_date:
+        description: |-
+          EndDate is the new end date in "MM-YYYY" format (optional)
+          Example: "02-2025"
+        type: string
+      id:
+        description: |-
+          ID is the unique identifier of the subscription to update
+          Required: yes
+        type: integer
+      price:
+        description: |-
+          Price is the new monthly price in USD cents or integer units (optional)
+          Example: 1000
+        type: integer
+      service_name:
+        description: |-
+          ServiceName is the new name of the service (optional)
+          Example: "Yandex Plus"
+        type: string
+      start_date:
+        description: |-
+          StartDate is the new start date in "MM-YYYY" format (optional)
+          Example: "01-2025"
+        type: string
+      user_id:
+        description: |-
+          UserUUID is the new unique identifier of the user (optional)
+          Example: "123e4567-e89b-42d3-a456-556642440000"
+        type: string
+    required:
+    - id
+    type: object
+host: localhost:3000
+info:
+  contact:
+    email: artyomkorchagin333@gmail.com
+    name: Artyom Korchagin
+  title: Effective Mobile Task GO Junior
+  version: "1.0"
+paths:
+  /subscriptions:
+    get:
+      description: Retrieve a list of all subscriptions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.Subscription'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      summary: Get all subscriptions
+      tags:
+      - subscription
+    patch:
+      consumes:
+      - application/json
+      description: Update only the provided fields of a subscription
+      parameters:
+      - description: Fields to update
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/types.SubscriptionUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      summary: Partially update a subscription
+      tags:
+      - subscription
+    post:
+      consumes:
+      - application/json
+      description: Create a new subscription
+      parameters:
+      - description: Create subscription
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/types.SubscriptionCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      summary: Create a subscription
+      tags:
+      - subscription
+  /subscriptions/{id}:
+    delete:
+      description: Delete a subscription by ID
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      summary: Delete a subscription
+      tags:
+      - subscription
+    get:
+      description: Retrieve a subscription by its ID
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      summary: Get a subscription by ID
+      tags:
+      - subscription
+  /subscriptions/sum:
+    get:
+      description: Calculate the total revenue from subscriptions matching the filter
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        type: string
+      - description: Service Name
+        in: query
+        name: service_name
+        type: string
+      - description: 'Start Date (format: MM-YYYY)'
+        in: query
+        name: start_date
+        type: string
+      - description: 'End Date (format: MM-YYYY)'
+        in: query
+        name: end_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              format: float64
+              type: number
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.HTTPError'
+      summary: Get total sum of subscriptions
+      tags:
+      - subscription
+swagger: "2.0"
