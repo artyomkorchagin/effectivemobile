@@ -109,7 +109,7 @@ func TestUpdateSubscription(t *testing.T) {
 	sub := types.NewSubscriptionCreateRequest("YouTube", 20, "7c6d3a1b-9e8f-4d7c-8b5a-2e9c1d0e4f3a", "01-2025", "02-2025")
 	id := insertTestSubscription(t, repo, &sub)
 
-	updated := &types.Subscription{
+	updated := &types.SubscriptionUpdateRequest{
 		ID:          id,
 		ServiceName: "YouTube Premium",
 		Price:       25,
