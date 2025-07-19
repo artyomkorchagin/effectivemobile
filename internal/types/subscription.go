@@ -17,7 +17,7 @@ type SubscriptionCreateRequest struct {
 	EndDate     string `json:"end_date" binding:"-"`
 }
 
-func NewSubscriptionCreateRequest(serviceName, userUUID, startDate, endDate string, price uint) SubscriptionCreateRequest {
+func NewSubscriptionCreateRequest(serviceName string, price uint, userUUID, startDate, endDate string) SubscriptionCreateRequest {
 	return SubscriptionCreateRequest{
 		ServiceName: serviceName,
 		Price:       price,
