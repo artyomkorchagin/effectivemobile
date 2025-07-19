@@ -6,6 +6,6 @@ import (
 	"github.com/artyomkorchagin/effectivemobile/internal/types"
 )
 
-func (s *Service) UpdateSubscription(ctx context.Context, sub *types.Subscription) error {
-	return s.repo.UpdateSubscription(ctx, sub)
+func (s *Service) UpdateSubscription(ctx context.Context, sur *types.SubscriptionUpdateRequest) error {
+	return s.repo.UpdateSubscription(ctx, sur)
 }
