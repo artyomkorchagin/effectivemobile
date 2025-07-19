@@ -39,7 +39,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/router.HTTPError"
                         }
@@ -74,13 +74,13 @@ const docTemplate = `{
                         "description": "No Content"
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad request",
                         "schema": {
                             "$ref": "#/definitions/router.HTTPError"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/router.HTTPError"
                         }
@@ -115,13 +115,13 @@ const docTemplate = `{
                         "description": "No Content"
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad request",
                         "schema": {
                             "$ref": "#/definitions/router.HTTPError"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/router.HTTPError"
                         }
@@ -177,13 +177,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad request",
                         "schema": {
                             "$ref": "#/definitions/router.HTTPError"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/router.HTTPError"
                         }
@@ -218,13 +218,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad request",
                         "schema": {
                             "$ref": "#/definitions/router.HTTPError"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/router.HTTPError"
                         }
@@ -254,13 +254,13 @@ const docTemplate = `{
                         "description": "No Content"
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Bad request",
                         "schema": {
                             "$ref": "#/definitions/router.HTTPError"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/router.HTTPError"
                         }
@@ -274,9 +274,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "code": {
+                    "description": "HTTP status code",
                     "type": "integer"
                 },
-                "err": {}
+                "error": {
+                    "description": "Error message"
+                }
             }
         },
         "types.Subscription": {

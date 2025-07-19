@@ -3,8 +3,10 @@ definitions:
   router.HTTPError:
     properties:
       code:
+        description: HTTP status code
         type: integer
-      err: {}
+      error:
+        description: Error message
     type: object
   types.Subscription:
     properties:
@@ -112,7 +114,7 @@ paths:
               $ref: '#/definitions/types.Subscription'
             type: array
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/router.HTTPError'
       summary: Get all subscriptions
@@ -135,11 +137,11 @@ paths:
         "200":
           description: No Content
         "400":
-          description: Bad Request
+          description: Bad request
           schema:
             $ref: '#/definitions/router.HTTPError'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/router.HTTPError'
       summary: Partially update a subscription
@@ -162,11 +164,11 @@ paths:
         "200":
           description: No Content
         "400":
-          description: Bad Request
+          description: Bad request
           schema:
             $ref: '#/definitions/router.HTTPError'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/router.HTTPError'
       summary: Create a subscription
@@ -187,11 +189,11 @@ paths:
         "200":
           description: No Content
         "400":
-          description: Bad Request
+          description: Bad request
           schema:
             $ref: '#/definitions/router.HTTPError'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/router.HTTPError'
       summary: Delete a subscription
@@ -213,11 +215,11 @@ paths:
           schema:
             $ref: '#/definitions/types.Subscription'
         "400":
-          description: Bad Request
+          description: Bad request
           schema:
             $ref: '#/definitions/router.HTTPError'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/router.HTTPError'
       summary: Get a subscription by ID
@@ -254,11 +256,11 @@ paths:
               type: number
             type: object
         "400":
-          description: Bad Request
+          description: Bad request
           schema:
             $ref: '#/definitions/router.HTTPError'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             $ref: '#/definitions/router.HTTPError'
       summary: Get total sum of subscriptions

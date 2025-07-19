@@ -6,9 +6,24 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @name HTTPError
+// @description Standard error response returned by the API
+// @property Code
+// @type integer
+// @description HTTP status code
+// @property Err
+// @type error
+// @description Human-readable error message
+type HTTPErrorSwaggerWrapper HTTPError
+
+// HTTPError represents an error response returned by the API.
+// This is used to standardize error responses across the application.
 type HTTPError struct {
-	Code int
-	Err  error
+	// HTTP status code
+	Code int `json:"code"`
+
+	// Error message
+	Err error `json:"error"`
 }
 
 func (e HTTPError) Error() string {
