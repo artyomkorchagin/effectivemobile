@@ -17,8 +17,8 @@ import (
 // @Produce      json
 // @Param        subscription  body      types.SubscriptionCreateRequest  true  "Create subscription"
 // @Success      200  "No Content"
-// @Failure      400  {object}  HTTPError
-// @Failure      500  {object}  HTTPError
+// @Failure      400  {object}  HTTPError "Bad request"
+// @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions [post]
 func (h *Handler) createSubscription(c *gin.Context) error {
 	var scr types.SubscriptionCreateRequest
@@ -46,8 +46,8 @@ func (h *Handler) createSubscription(c *gin.Context) error {
 // @Produce      json
 // @Param        id   path    int     true  "Subscription ID"
 // @Success      200  {object}  types.Subscription
-// @Failure      400  {object}  HTTPError
-// @Failure      500  {object}  HTTPError
+// @Failure      400  {object}  HTTPError "Bad request"
+// @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions/{id} [get]
 func (h *Handler) getSubscription(c *gin.Context) error {
 	idRaw := c.Param("id")
@@ -77,8 +77,8 @@ func (h *Handler) getSubscription(c *gin.Context) error {
 // @Produce      json
 // @Param        subscription body    types.SubscriptionUpdateRequest  true  "Fields to update"
 // @Success      200  "No Content"
-// @Failure      400  {object}  HTTPError
-// @Failure      500  {object}  HTTPError
+// @Failure      400  {object}  HTTPError "Bad request"
+// @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions [patch]
 func (h *Handler) updateSubscription(c *gin.Context) error {
 	var sur types.SubscriptionUpdateRequest
@@ -105,8 +105,8 @@ func (h *Handler) updateSubscription(c *gin.Context) error {
 // @Produce      json
 // @Param        id   path    int     true  "Subscription ID"
 // @Success      200  "No Content"
-// @Failure      400  {object}  HTTPError
-// @Failure      500  {object}  HTTPError
+// @Failure      400  {object}  HTTPError "Bad request"
+// @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions/{id} [delete]
 func (h *Handler) deleteSubscription(c *gin.Context) error {
 	idRaw := c.Param("id")
@@ -132,7 +132,7 @@ func (h *Handler) deleteSubscription(c *gin.Context) error {
 // @Tags         subscription
 // @Produce      json
 // @Success      200  {array}  types.Subscription
-// @Failure      500  {object}  HTTPError
+// @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions [get]
 func (h *Handler) getAllSubscriptions(c *gin.Context) error {
 	subs, err := h.subscriptionService.GetAllSubscriptions(c)
@@ -156,8 +156,8 @@ func (h *Handler) getAllSubscriptions(c *gin.Context) error {
 // @Param        start_date  query   string  false  "Start Date (format: MM-YYYY)"
 // @Param        end_date    query   string  false  "End Date (format: MM-YYYY)"
 // @Success      200  {object}  map[string]float64
-// @Failure      400  {object}  HTTPError
-// @Failure      500  {object}  HTTPError
+// @Failure      400  {object}  HTTPError "Bad request"
+// @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions/sum [get]
 func (h *Handler) getSumOfSubscriptions(c *gin.Context) error {
 	filter := types.Filter{}
