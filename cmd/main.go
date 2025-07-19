@@ -20,6 +20,15 @@ func init() {
 	}
 }
 
+//	@title			Effective Mobile Task GO Junior
+//	@version		1.0
+
+//	@contact.name	Artyom Korchagin
+//	@contact.email	artyomkorchagin333@gmail.com
+
+//	@host		localhost:3000
+//	@BasePath	/
+
 func main() {
 	mylogger := logger.New()
 	defer mylogger.Close()

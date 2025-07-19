@@ -4,9 +4,12 @@ import (
 	"log"
 	"net/http"
 
+	_ "github.com/artyomkorchagin/effectivemobile/docs"
 	"github.com/artyomkorchagin/effectivemobile/internal/middleware"
 	servicesubscription "github.com/artyomkorchagin/effectivemobile/internal/services/subscription"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Handler struct {
@@ -24,22 +27,23 @@ func NewHandler(subscriptionService *servicesubscription.Service, logger *log.Lo
 func (h *Handler) InitRouter() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
-
 	router.Use(middleware.LoggerMiddleware(h.logger))
 
 	main := router.Group("/")
 	{
 		// basic CRUDL routes
-		main.GET("/subscription/:id", h.wrap(h.getSubscription))
-		main.POST("/subscription", h.wrap(h.createSubscription))
-		main.PUT("/subscription", h.wrap(h.updateSubscription))
-		main.DELETE("/subscription/:id", h.wrap(h.deleteSubscription))
+		main.GET("/subscriptions/:id", h.wrap(h.getSubscription))
+		main.POST("/subscriptions", h.wrap(h.createSubscription))
+		main.PATCH("/subscriptions", h.wrap(h.updateSubscription))
+		main.DELETE("/subscriptions/:id", h.wrap(h.deleteSubscription))
 		main.GET("/subscriptions", h.wrap(h.getAllSubscriptions))
-		main.GET("/sum-of-subscriptions", h.wrap(h.getSumOfSubscriptions))
+		main.GET("/subscriptions/sum", h.wrap(h.getSumOfSubscriptions))
 
 		main.GET("/status", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"status": "ok"})
 		})
+
+		main.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
 	return router
