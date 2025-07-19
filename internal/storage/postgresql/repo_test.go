@@ -163,7 +163,6 @@ func TestGetSumOfSubscriptions(t *testing.T) {
 
 	ctx := context.Background()
 
-	// Insert some test data
 	req := types.NewSubscriptionCreateRequest("Netflix", 10, "3d5f7e9c-1a2b-3d4e-5f6a-7b8c9d0e1f2a", "01-2024", "03-2024")
 	id := insertTestSubscription(t, repo, &req)
 	req2 := types.NewSubscriptionCreateRequest("Netflix", 10, "3d5f7e9c-1a2b-3d4e-5f6a-7b8c9d0e1f2a", "01-2024", "02-2024")
