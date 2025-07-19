@@ -3,29 +3,16 @@ package psqlsubscription
 import (
 	"context"
 	"database/sql"
-	"fmt"
-	"log"
 	"os"
 	"testing"
 
 	"github.com/artyomkorchagin/effectivemobile/internal/types"
 	"github.com/artyomkorchagin/effectivemobile/pkg/helpers"
-	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
-
-func init() {
-	root, err := helpers.GetProjectRoot()
-	if err != nil {
-		log.Println(err)
-	}
-	if err := godotenv.Load(fmt.Sprintf("%s/.env", root)); err != nil {
-		log.Print("No .env file found")
-	}
-}
 
 func TestMain(m *testing.M) {
 	code := m.Run()

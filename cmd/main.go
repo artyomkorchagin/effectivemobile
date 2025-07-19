@@ -9,16 +9,9 @@ import (
 	servicesubscription "github.com/artyomkorchagin/effectivemobile/internal/services/subscription"
 	psqlsubscription "github.com/artyomkorchagin/effectivemobile/internal/storage/postgresql"
 	"github.com/artyomkorchagin/effectivemobile/pkg/logger"
-	"github.com/joho/godotenv"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
-
-func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Print("No .env file found")
-	}
-}
 
 //	@title			Effective Mobile Task GO Junior
 //	@version		1.0
