@@ -11,10 +11,10 @@ import (
 func migrationUp(db *sql.DB) error {
 	migrationPath, err := getMigrationPath()
 	if err != nil {
-		return fmt.Errorf("[Goose up] ", err)
+		return fmt.Errorf("[Goose up] %v", err)
 	}
 	if err := goose.SetDialect("pgx"); err != nil {
-		return fmt.Errorf("[Goose up] Goose could not set the dialect to pgx: ", err)
+		return fmt.Errorf("[Goose up] Goose could not set the dialect to pgx: %v", err)
 	}
 	return goose.Up(db, migrationPath)
 }
@@ -22,10 +22,10 @@ func migrationUp(db *sql.DB) error {
 func migrationDown(db *sql.DB) error {
 	migrationPath, err := getMigrationPath()
 	if err != nil {
-		return fmt.Errorf("[Goose down] ", err)
+		return fmt.Errorf("[Goose down] %v", err)
 	}
 	if err := goose.SetDialect("pgx"); err != nil {
-		return fmt.Errorf("[Goose down] Goose could not set the dialect to pgx: ", err)
+		return fmt.Errorf("[Goose down] Goose could not set the dialect to pgx: %v", err)
 	}
 	return goose.Up(db, migrationPath)
 }
@@ -33,7 +33,7 @@ func migrationDown(db *sql.DB) error {
 func getMigrationPath() (string, error) {
 	migrationPath, err := helpers.GetProjectRoot()
 	if err != nil {
-		return "", fmt.Errorf("Migration path/root not found: ", err)
+		return "", fmt.Errorf("Migration path/root not found: %v", err)
 	}
 	migrationPath += "/migrations"
 	return migrationPath, nil

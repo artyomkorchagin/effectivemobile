@@ -33,7 +33,7 @@ func (h *Handler) createSubscription(c *gin.Context) error {
 	if err := h.subscriptionService.CreateSubscription(c, &scr); err != nil {
 		return HTTPError{
 			Code: http.StatusInternalServerError,
-			Err:  fmt.Errorf("Error inserting subscription into DB: ", err),
+			Err:  fmt.Errorf("Error inserting subscription into DB: %v", err),
 		}
 	}
 	return nil
@@ -86,13 +86,13 @@ func (h *Handler) updateSubscription(c *gin.Context) error {
 	if err := c.BindJSON(&sur); err != nil {
 		return HTTPError{
 			Code: http.StatusBadRequest,
-			Err:  fmt.Errorf("Error binding JSON to struct: ", err),
+			Err:  fmt.Errorf("Error binding JSON to struct: %v", err),
 		}
 	}
 	if err := h.subscriptionService.UpdateSubscription(c, &sur); err != nil {
 		return HTTPError{
 			Code: http.StatusInternalServerError,
-			Err:  fmt.Errorf("Error updating subscription : ", err),
+			Err:  fmt.Errorf("Error updating subscription : %v", err),
 		}
 	}
 	return nil
