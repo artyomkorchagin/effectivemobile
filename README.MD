@@ -53,7 +53,7 @@ http://localhost:3000/swagger/index.html
 | Сервис     | Описание                          | Порт      |
 |------------|-----------------------------------|-----------|
 | `db`       | PostgreSQL база данных            | 5432      |
-| `app`      | Go Gin API сервер                 | 3000      |
+| `backend`      | Go Gin API сервер                 | 3000      |
 
 ---
 
@@ -65,7 +65,6 @@ http://localhost:3000/swagger/index.html
 | `make up`      | Запустить всю инфраструктуру       |
 | `make down`    | Остановить и удалить контейнеры    |
 | `make restart` | Пересобрать и перезапустить всё    |
-| `make run`     | Запустить приложение без Docker    |
 | `make clean`   | Очистить Docker артефакты          |
 
 ---
