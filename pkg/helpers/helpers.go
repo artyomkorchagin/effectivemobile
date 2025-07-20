@@ -2,9 +2,9 @@ package helpers
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"time"
 )
 
@@ -37,11 +37,10 @@ func RunMake(target, root string) error {
 }
 
 func GetProjectRoot() (string, error) {
-	cmd := exec.Command("go", "env", "GOMOD")
-	out, err := cmd.Output()
+	path, err := os.Getwd()
 	if err != nil {
-		return "", fmt.Errorf("failed to find go.mod: %v", err)
+		log.Println(err)
+		return "", err
 	}
-	gomodPath := string(out)
-	return filepath.Dir(gomodPath), nil
+	return path, nil
 }
