@@ -1,4 +1,3 @@
-#!make
 include .env
 
 PROJECT_NAME=effectivemobile
@@ -15,26 +14,23 @@ db-down:
 	@goose -dir=$(GOOSE_MIGRATION_PATH) postgres $(GOOSE_DSN) down
 
 build:
-    docker-compose build
+	docker compose build
 
 up:
-    docker-compose up -d
+	docker compose up -d
 
 down:
-    docker-compose down
+	docker compose down
 
 restart: down up
 
 migrate:
-    docker-compose up -d db
-    @sleep 3
-    docker-compose up migrate
+	docker compose up -d db
+	@sleep 3
+	docker compose up migrate
 
 run:
-    go run cmd/main.go
-
-test:
-    go test -v ./...
+	go run cmd/main.go
 
 clean:
-    docker-compose down -v --rmi all
+	docker compose down -v --rmi all
