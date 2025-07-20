@@ -9,10 +9,9 @@ import (
 	"github.com/artyomkorchagin/effectivemobile/internal/config"
 	"github.com/artyomkorchagin/effectivemobile/internal/types"
 	"github.com/artyomkorchagin/effectivemobile/pkg/helpers"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func TestMain(m *testing.M) {
@@ -158,6 +157,9 @@ func TestGetSumOfSubscriptions(t *testing.T) {
 
 func setupTest(t *testing.T) *Repository {
 	db, err := sql.Open("pgx", config.GetDSN())
+	require.NoError(t, err)
+
+	err = db.Ping()
 	require.NoError(t, err)
 
 	repo, err := NewRepository(db)
