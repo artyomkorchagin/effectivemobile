@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func LoggerMiddleware(logger *log.Logger) gin.HandlerFunc {
+func LoggerMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
 
@@ -31,6 +31,5 @@ func LoggerMiddleware(logger *log.Logger) gin.HandlerFunc {
 			path,
 		)
 		log.Println(msg)
-		logger.Println(msg)
 	}
 }

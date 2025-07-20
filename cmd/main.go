@@ -8,7 +8,6 @@ import (
 	"github.com/artyomkorchagin/effectivemobile/internal/router"
 	servicesubscription "github.com/artyomkorchagin/effectivemobile/internal/services/subscription"
 	psqlsubscription "github.com/artyomkorchagin/effectivemobile/internal/storage/postgresql"
-	"github.com/artyomkorchagin/effectivemobile/pkg/logger"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -23,9 +22,6 @@ import (
 //	@BasePath	/
 
 func main() {
-	mylogger := logger.New()
-	defer mylogger.Close()
-
 	db, err := sql.Open("pgx", config.GetDSN())
 	if err != nil {
 		log.Fatal(err)
@@ -35,10 +31,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	subRepo := psqlsubscription.NewRepository(db)
+	subRepo, err := psqlsubscription.NewRepository(db)
+	if err != nil {
+		log.Fatal("Error creating repository: ", err)
+	}
 	subSvc := servicesubscription.NewService(subRepo)
 
-	handler := router.NewHandler(subSvc, mylogger.Logger)
+	handler := router.NewHandler(subSvc)
 	r := handler.InitRouter()
 	r.Run(":3000")
 }

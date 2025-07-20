@@ -1,6 +1,7 @@
 package router
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -37,10 +38,10 @@ func (h *Handler) wrap(fn handlerFunc) gin.HandlerFunc {
 		err := fn(c)
 		if err != nil {
 			if httpErr, ok := err.(HTTPError); ok {
-				h.logger.Println(httpErr.Code, err)
+				log.Println(httpErr.Code, err)
 				c.JSON(httpErr.Code, gin.H{"error": httpErr.Err.Error()})
 			} else {
-				h.logger.Println(http.StatusInternalServerError, err)
+				log.Println(http.StatusInternalServerError, err)
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			}
 		}

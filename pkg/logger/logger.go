@@ -10,6 +10,8 @@ type Logger struct {
 	file   *os.File
 }
 
+// This is for writing logs into file
+// Apperantly, they don't do that in prod
 func New() Logger {
 	f, err := os.OpenFile("logfile", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {

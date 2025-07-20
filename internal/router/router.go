@@ -1,7 +1,6 @@
 package router
 
 import (
-	"log"
 	"net/http"
 
 	_ "github.com/artyomkorchagin/effectivemobile/docs"
@@ -14,20 +13,18 @@ import (
 
 type Handler struct {
 	subscriptionService *servicesubscription.Service
-	logger              *log.Logger
 }
 
-func NewHandler(subscriptionService *servicesubscription.Service, logger *log.Logger) *Handler {
+func NewHandler(subscriptionService *servicesubscription.Service) *Handler {
 	return &Handler{
 		subscriptionService: subscriptionService,
-		logger:              logger,
 	}
 }
 
 func (h *Handler) InitRouter() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
-	router.Use(middleware.LoggerMiddleware(h.logger))
+	router.Use(middleware.LoggerMiddleware())
 
 	main := router.Group("/")
 	{
