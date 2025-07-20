@@ -4,7 +4,7 @@ build:
 	docker compose build
 
 up:
-	docker compose up -d
+	docker compose up
 
 down:
 	docker compose down
@@ -16,3 +16,8 @@ run:
 
 clean:
 	docker compose down -v --rmi all
+
+test:
+	docker compose up -d db
+	docker compose run --rm test
+	down
