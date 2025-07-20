@@ -35,6 +35,7 @@ func getMigrationPath() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("Migration path/root not found: %v", err)
 	}
+
 	migrationPath += "/migrations"
 	return migrationPath, nil
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/artyomkorchagin/effectivemobile/internal/config"
 	"github.com/artyomkorchagin/effectivemobile/internal/types"
 	"github.com/artyomkorchagin/effectivemobile/pkg/helpers"
 	"github.com/stretchr/testify/assert"
@@ -156,7 +157,7 @@ func TestGetSumOfSubscriptions(t *testing.T) {
 }
 
 func setupTest(t *testing.T) *Repository {
-	db, err := sql.Open("pgx", helpers.GetEnv("TESTDB_DSN", ""))
+	db, err := sql.Open("pgx", config.GetDSN())
 	require.NoError(t, err)
 
 	repo, err := NewRepository(db)

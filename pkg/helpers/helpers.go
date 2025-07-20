@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 )
 
@@ -24,6 +25,7 @@ func ParseTime(s string) (time.Time, error) {
 	return parsedTime, nil
 }
 
+// i thought i'd need it later but oh well
 func RunMake(target, root string) error {
 	cmd := exec.Command("make", target)
 	cmd.Stderr = os.Stderr
@@ -42,5 +44,6 @@ func GetProjectRoot() (string, error) {
 		log.Println(err)
 		return "", err
 	}
+	path = filepath.Dir(filepath.Dir(filepath.Dir(path)))
 	return path, nil
 }
