@@ -141,39 +141,20 @@ const docTemplate = `{
                 "summary": "Get total sum of subscriptions",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "user_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Service Name",
-                        "name": "service_name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Start Date (format: MM-YYYY)",
-                        "name": "start_date",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "End Date (format: MM-YYYY)",
-                        "name": "end_date",
-                        "in": "query"
+                        "description": "Fields to filter",
+                        "name": "filter",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.Filter"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Total sum",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "number",
-                                "format": "float64"
-                            }
+                            "type": "integer"
                         }
                     },
                     "400": {
@@ -279,6 +260,28 @@ const docTemplate = `{
                 },
                 "error": {
                     "description": "Error message"
+                }
+            }
+        },
+        "types.Filter": {
+            "description": "Filter represents the query parameters used to filter subscriptions. Includes user ID, service name, and date range.",
+            "type": "object",
+            "properties": {
+                "end_date": {
+                    "description": "EndDate is the end date of the filter range (in MM-YYY format).\nExample: \"05-2025\"",
+                    "type": "string"
+                },
+                "service_name": {
+                    "description": "ServiceName is the name of the service to filter by.\nExample: \"Yandex Plus\"",
+                    "type": "string"
+                },
+                "start_date": {
+                    "description": "StartDate is the start date of the filter range (in MM-YYY format).\nExample: \"01-2025\"",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "UserUUID is the unique identifier of the user.\nExample: \"a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8\"",
+                    "type": "string"
                 }
             }
         },
@@ -394,6 +397,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
+	LeftDelim:        "{{",
+	RightDelim:       "}}",
 }
 
 func init() {
