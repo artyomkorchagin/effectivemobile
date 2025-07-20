@@ -20,21 +20,6 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func setupTestDB(repo *Repository) error {
-	_, err := repo.db.Exec(`
-        DROP TABLE IF EXISTS subscriptions;
-        CREATE TABLE subscriptions (
-			id BIGSERIAL PRIMARY KEY,
-			service_name TEXT NOT NULL,
-			price INTEGER NOT NULL CHECK (price >= 0),
-			user_id TEXT NOT NULL,
-			start_date DATE NOT NULL,
-			end_date DATE
-		);
-    `)
-	return err
-}
-
 func teardownTestDB(repo *Repository) {
 	repo.db.Exec("DROP TABLE IF EXISTS subscriptions;")
 }
@@ -174,8 +159,7 @@ func setupTest(t *testing.T) *Repository {
 	db, err := sql.Open("pgx", helpers.GetEnv("TESTDB_DSN", ""))
 	require.NoError(t, err)
 
-	repo := NewRepository(db)
-	err = setupTestDB(repo)
+	repo, err := NewRepository(db)
 	require.NoError(t, err)
 
 	return repo
