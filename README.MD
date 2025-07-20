@@ -65,9 +65,7 @@ http://localhost:3000/swagger/index.html
 | `make up`      | Запустить всю инфраструктуру       |
 | `make down`    | Остановить и удалить контейнеры    |
 | `make restart` | Пересобрать и перезапустить всё    |
-| `make migrate` | Применить миграции БД              |
 | `make run`     | Запустить приложение без Docker    |
-| `make test`    | Запустить тесты                    |
 | `make clean`   | Очистить Docker артефакты          |
 
 ---
@@ -121,14 +119,6 @@ http://localhost:3000/swagger/index.html
   "code": 400,
   "error": "invalid ID"
 }
-```
-
----
-
-## Запуск тестов
-
-```bash
-make test
 ```
 
 ---

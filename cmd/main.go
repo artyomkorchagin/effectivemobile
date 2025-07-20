@@ -30,7 +30,7 @@ func main() {
 	if err := db.Ping(); err != nil {
 		log.Fatal(err)
 	}
-
+	log.Println("Connected to database")
 	subRepo, err := psqlsubscription.NewRepository(db)
 	if err != nil {
 		log.Fatal("Error creating repository: ", err)
@@ -40,4 +40,5 @@ func main() {
 	handler := router.NewHandler(subSvc)
 	r := handler.InitRouter()
 	r.Run(":3000")
+	log.Println("Server started on port 3000")
 }

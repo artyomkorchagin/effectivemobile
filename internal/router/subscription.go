@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -95,6 +96,7 @@ func (h *Handler) updateSubscription(c *gin.Context) error {
 			Err:  fmt.Errorf("Error updating subscription : %v", err),
 		}
 	}
+	log.Printf("Updated subscription successfully: %v", sur)
 	return nil
 }
 
@@ -123,6 +125,7 @@ func (h *Handler) deleteSubscription(c *gin.Context) error {
 			Err:  fmt.Errorf("Error deleting subscription (id: %d) from DB: %v", id, err),
 		}
 	}
+	log.Printf("Deleted subscription successfully: %v", id)
 	return nil
 }
 
@@ -142,6 +145,7 @@ func (h *Handler) getAllSubscriptions(c *gin.Context) error {
 			Err:  fmt.Errorf("Error retrieving all subscriptions from DB: %v", err),
 		}
 	}
+	log.Printf("Got all subscriptions successfully: %v", subs)
 	c.JSON(http.StatusOK, subs)
 	return nil
 }
@@ -171,6 +175,7 @@ func (h *Handler) getSumOfSubscriptions(c *gin.Context) error {
 			Err:  fmt.Errorf("Error retrieving sum from DB: %v", err),
 		}
 	}
+	log.Printf("Got sum of subscriptions successfully: %v", sum)
 	c.JSON(http.StatusOK, gin.H{"sum": sum})
 	return nil
 }

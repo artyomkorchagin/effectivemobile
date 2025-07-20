@@ -1,6 +1,7 @@
 package router
 
 import (
+	"log"
 	"net/http"
 
 	_ "github.com/artyomkorchagin/effectivemobile/docs"
@@ -42,6 +43,6 @@ func (h *Handler) InitRouter() *gin.Engine {
 
 		main.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
-
+	log.Println("Routes initialized")
 	return router
 }
