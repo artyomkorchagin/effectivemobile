@@ -38,18 +38,28 @@ func buildSumQuery(filter *types.Filter) (string, []interface{}) {
 
 	startDate := filter.StartDate
 	if startDate == "" {
-		startDate = "01-01-2015" // some default date if startDate is null
+		startDate = "2015-01-01"
 	} else {
-		startDate = fmt.Sprintf("01-%s", startDate)
+		parsed, err := time.Parse("01-2006", startDate)
+		if err != nil {
+			startDate = "2015-01-01"
+		} else {
+			startDate = parsed.Format("2006-01-02")
+		}
 	}
 	args = append(args, startDate)
 	paramIndex++
 
 	endDate := filter.EndDate
 	if endDate == "" {
-		endDate = time.Now().Format("02-01-2006")
+		endDate = time.Now().Format("2006-01-02")
 	} else {
-		endDate = fmt.Sprintf("01-%s", endDate)
+		parsed, err := time.Parse("01-2006", endDate)
+		if err != nil {
+			endDate = time.Now().Format("2006-01-02")
+		} else {
+			endDate = parsed.Format("2006-01-02")
+		}
 	}
 	args = append(args, endDate)
 	paramIndex++
