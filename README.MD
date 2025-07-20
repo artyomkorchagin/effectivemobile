@@ -106,7 +106,7 @@ http://localhost:3000/swagger/index.html
   "price": 1000,
   "user_id": "123e4567-e89b-42d3-a456-556642440000",
   "start_date": "01-2025",
-  "end_date": ""
+  "end_date": null
 }
 ```
 
