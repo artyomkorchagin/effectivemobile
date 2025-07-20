@@ -151,11 +151,8 @@ func (h *Handler) getAllSubscriptions(c *gin.Context) error {
 // @Description  Calculate the total revenue from subscriptions matching the filter
 // @Tags         subscription
 // @Produce      json
-// @Param        user_id     query     string  false  "User ID"
-// @Param        service_name  query   string  false  "Service Name"
-// @Param        start_date  query   string  false  "Start Date (format: MM-YYYY)"
-// @Param        end_date    query   string  false  "End Date (format: MM-YYYY)"
-// @Success      200  {object}  map[string]float64
+// @Param        filter body    types.Filter  true  "Fields to filter"
+// @Success      200  {object}  int "Total sum"
 // @Failure      400  {object}  HTTPError "Bad request"
 // @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions/sum [get]
