@@ -1,11 +1,8 @@
 package helpers
 
 import (
-	"fmt"
 	"log"
 	"os"
-	"os/exec"
-	"path/filepath"
 	"time"
 )
 
@@ -25,25 +22,11 @@ func ParseTime(s string) (time.Time, error) {
 	return parsedTime, nil
 }
 
-// i thought i'd need it later but oh well
-func RunMake(target, root string) error {
-	cmd := exec.Command("make", target)
-	cmd.Stderr = os.Stderr
-	cmd.Dir = root
-
-	err := cmd.Run()
-	if err != nil {
-		return fmt.Errorf("failed to run make %s: %v", target, err)
-	}
-	return nil
-}
-
 func GetProjectRoot() (string, error) {
 	path, err := os.Getwd()
 	if err != nil {
 		log.Println(err)
 		return "", err
 	}
-	path = filepath.Dir(filepath.Dir(filepath.Dir(path)))
 	return path, nil
 }
