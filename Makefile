@@ -1,20 +1,25 @@
 include .env
 
 build:
-	docker compose build
+	docker compose --env-file ./.env build
 
 up:
-	docker compose up
+	docker compose --env-file ./.env up
 
 down:
-	docker compose down
+	docker compose --env-file ./.env down
 
 restart: down up
 
-clean:
-	docker compose down -v --rmi all
-
 test:
-	docker compose up -d db
-	docker compose run --rm test
-	down
+	@go test -v ./...
+
+clean:
+	docker compose --env-file ./.env down -v --rmi all
+
+cover:
+	@go test -v -coverprofile ./tests/cover.out ./...
+	@go tool cover -html ./tests/cover.out -o ./tests/cover.html
+
+clean-volumes:
+	docker volume prune -f

@@ -1,31 +1,34 @@
 package router
 
 import (
-	"log"
 	"net/http"
 
 	_ "github.com/artyomkorchagin/effectivemobile/docs"
-	"github.com/artyomkorchagin/effectivemobile/internal/middleware"
 	servicesubscription "github.com/artyomkorchagin/effectivemobile/internal/services/subscription"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"go.uber.org/zap"
 )
 
 type Handler struct {
 	subscriptionService *servicesubscription.Service
+	logger              *zap.Logger
 }
 
-func NewHandler(subscriptionService *servicesubscription.Service) *Handler {
+func NewHandler(subscriptionService *servicesubscription.Service, logger *zap.Logger) *Handler {
 	return &Handler{
 		subscriptionService: subscriptionService,
+		logger:              logger,
 	}
 }
 
 func (h *Handler) InitRouter() *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
-	router.Use(middleware.LoggerMiddleware())
+
+	router.Use(gin.Recovery())
+	router.Use(gin.Logger())
 
 	main := router.Group("/")
 	{
@@ -43,6 +46,6 @@ func (h *Handler) InitRouter() *gin.Engine {
 
 		main.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
-	log.Println("Routes initialized")
+	h.logger.Info("Routes initialized")
 	return router
 }

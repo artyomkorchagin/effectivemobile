@@ -1,5 +1,7 @@
 package types
 
+import "github.com/google/uuid"
+
 // Subscription represents a user's subscription to a service.
 type Subscription struct {
 	// Unique identifier for the subscription
@@ -12,7 +14,7 @@ type Subscription struct {
 	Price uint `json:"price" binding:"required"`
 
 	// Unique identifier of the user who owns this subscription
-	UserUUID string `json:"user_id" binding:"required"`
+	UserUUID uuid.UUID `json:"user_id" binding:"required"`
 
 	// Start date of the subscription in "MM-YYYY" format
 	StartDate string `json:"start_date" binding:"required"`
@@ -38,7 +40,7 @@ type SubscriptionUpdateRequest struct {
 
 	// UserUUID is the new unique identifier of the user (optional)
 	// Example: "123e4567-e89b-42d3-a456-556642440000"
-	UserUUID string `json:"user_id,omitempty"`
+	UserUUID uuid.UUID `json:"user_id,omitempty"`
 
 	// StartDate is the new start date in "MM-YYYY" format (optional)
 	// Example: "01-2025"
@@ -58,7 +60,7 @@ type SubscriptionCreateRequest struct {
 	Price uint `json:"price" binding:"required"`
 
 	// Unique identifier of the user who owns this subscription (uuid)
-	UserUUID string `json:"user_id" binding:"required"`
+	UserUUID uuid.UUID `json:"user_id" binding:"required"`
 
 	// Start date of the subscription in "MM-YYYY" format
 	StartDate string `json:"start_date" binding:"required"`
@@ -67,7 +69,7 @@ type SubscriptionCreateRequest struct {
 	EndDate string `json:"end_date" binding:"-"`
 }
 
-func NewSubscriptionCreateRequest(serviceName string, price uint, userUUID, startDate, endDate string) SubscriptionCreateRequest {
+func NewSubscriptionCreateRequest(serviceName string, price uint, userUUID uuid.UUID, startDate, endDate string) SubscriptionCreateRequest {
 	return SubscriptionCreateRequest{
 		ServiceName: serviceName,
 		Price:       price,

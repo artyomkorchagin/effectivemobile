@@ -3,6 +3,7 @@ package psqlsubscription
 import (
 	"context"
 	"database/sql"
+	"log"
 	"os"
 	"testing"
 
@@ -156,14 +157,17 @@ func TestGetSumOfSubscriptions(t *testing.T) {
 }
 
 func setupTest(t *testing.T) *Repository {
-	db, err := sql.Open("pgx", config.GetDSN())
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatal("Failed to load config:", err)
+	}
+	db, err := sql.Open("pgx", cfg.GetDSN())
 	require.NoError(t, err)
 
 	err = db.Ping()
 	require.NoError(t, err)
 
-	repo, err := NewRepository(db)
-	require.NoError(t, err)
+	repo := NewRepository(db)
 
 	return repo
 }

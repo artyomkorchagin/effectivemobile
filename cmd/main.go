@@ -1,44 +1,65 @@
 package main
 
 import (
+	"context"
 	"database/sql"
-	"log"
+	"time"
 
+	"github.com/artyomkorchagin/effectivemobile/internal/app"
 	"github.com/artyomkorchagin/effectivemobile/internal/config"
-	"github.com/artyomkorchagin/effectivemobile/internal/router"
-	servicesubscription "github.com/artyomkorchagin/effectivemobile/internal/services/subscription"
-	psqlsubscription "github.com/artyomkorchagin/effectivemobile/internal/storage/postgresql"
-
+	"github.com/artyomkorchagin/effectivemobile/internal/logger"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"go.uber.org/zap"
 )
 
-//	@title			Effective Mobile Task GO Junior
-//	@version		1.0
-
-//	@contact.name	Artyom Korchagin
-//	@contact.email	artyomkorchagin333@gmail.com
-
-//	@host		localhost:3000
-//	@BasePath	/
+// @title			Effective Mobile Task GO Junior
+// @version			1.0
+// @contact.name	Artyom Korchagin
+// @contact.email	artyomkorchagin333@gmail.com
+// @host			localhost:3000
+// @BasePath		/
 
 func main() {
-	db, err := sql.Open("pgx", config.GetDSN())
+	cfg, err := config.LoadConfig()
 	if err != nil {
-		log.Fatal(err)
+		panic("failed to load config: " + err.Error())
 	}
 
-	if err := db.Ping(); err != nil {
-		log.Fatal(err)
+	devMode := logger.Production
+	if cfg.LogMode == "DEV" {
+		devMode = logger.Development
 	}
-	log.Println("Connected to database")
-	subRepo, err := psqlsubscription.NewRepository(db)
-	if err != nil {
-		log.Fatal("Error creating repository: ", err)
-	}
-	subSvc := servicesubscription.NewService(subRepo)
 
-	handler := router.NewHandler(subSvc)
-	r := handler.InitRouter()
-	r.Run(":3000")
-	log.Println("Server started on port 3000")
+	zapLogger, err := logger.New(devMode)
+	if err != nil {
+		panic("failed to initialize logger: " + err.Error())
+	}
+	defer zapLogger.Sync()
+
+	zapLogger.Info("Starting application", zap.String("port", cfg.Server.Port))
+
+	db, err := sql.Open("pgx", cfg.GetDSN())
+	if err != nil {
+		zapLogger.Fatal("failed to open database", zap.Error(err))
+	}
+	defer func() {
+		if err := db.Close(); err != nil {
+			zapLogger.Error("error closing database", zap.Error(err))
+		}
+	}()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := db.PingContext(ctx); err != nil {
+		zapLogger.Fatal("failed to ping database", zap.Error(err))
+	}
+
+	if err := app.RunMigrations(db, zapLogger); err != nil {
+		zapLogger.Fatal("failed to run migrations", zap.Error(err))
+	}
+
+	application := app.New(cfg, db, zapLogger)
+	if err := application.Run(); err != nil {
+		zapLogger.Fatal("application error", zap.Error(err))
+	}
 }

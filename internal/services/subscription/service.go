@@ -4,15 +4,18 @@ import (
 	"context"
 
 	"github.com/artyomkorchagin/effectivemobile/internal/types"
+	"go.uber.org/zap"
 )
 
 type Service struct {
-	repo ReadWriter
+	repo   ReadWriter
+	logger *zap.Logger // по хорошему нужно сделать кастомный интерфейс
 }
 
-func NewService(repo ReadWriter) *Service {
+func NewService(repo ReadWriter, logger *zap.Logger) *Service {
 	return &Service{
-		repo: repo,
+		repo:   repo,
+		logger: logger,
 	}
 }
 
