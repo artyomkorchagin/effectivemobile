@@ -11,7 +11,7 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"go.uber.org/zap"
 )
-
+//test
 // @title			Effective Mobile Task GO Junior
 // @version			1.0
 // @contact.name	Artyom Korchagin
