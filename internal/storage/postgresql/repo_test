@@ -10,6 +10,7 @@ import (
 	"github.com/artyomkorchagin/effectivemobile/internal/config"
 	"github.com/artyomkorchagin/effectivemobile/internal/types"
 	"github.com/artyomkorchagin/effectivemobile/pkg/helpers"
+	"github.com/google/uuid"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -49,7 +50,7 @@ func TestCreateSubscription(t *testing.T) {
 	repo := setupTest(t)
 	defer teardownTestDB(repo)
 	ctx := context.Background()
-	sub := types.NewSubscriptionCreateRequest("Netflix", 10, "123e4567-e89b-42d3-a456-556642440000", "01-2025", "02-2025")
+	sub := types.NewSubscriptionCreateRequest("Netflix", 10, uuid.New(), "01-2025", "02-2025")
 
 	err := repo.CreateSubscription(ctx, &sub)
 	require.NoError(t, err)
@@ -64,13 +65,14 @@ func TestGetSubscription(t *testing.T) {
 	repo := setupTest(t)
 
 	ctx := context.Background()
-	sub := types.NewSubscriptionCreateRequest("Spotify", 15, "3a7b2c8d-5f9e-4a1b-8c7d-0e2f5a4b3c1d", "01-2025", "02-2025")
+	testuuid := uuid.New()
+	sub := types.NewSubscriptionCreateRequest("Spotify", 15, testuuid, "01-2025", "02-2025")
 	id := insertTestSubscription(t, repo, &sub)
 
 	result, err := repo.GetSubscription(ctx, id)
 	require.NoError(t, err)
 	assert.Equal(t, "Spotify", result.ServiceName)
-	assert.Equal(t, "3a7b2c8d-5f9e-4a1b-8c7d-0e2f5a4b3c1d", result.UserUUID)
+	assert.Equal(t, "testuuid", result.UserUUID)
 	assert.Equal(t, "01-2025", result.StartDate)
 	assert.Equal(t, "02-2025", result.EndDate)
 }
@@ -79,14 +81,15 @@ func TestUpdateSubscription(t *testing.T) {
 	repo := setupTest(t)
 
 	ctx := context.Background()
-	sub := types.NewSubscriptionCreateRequest("YouTube", 20, "7c6d3a1b-9e8f-4d7c-8b5a-2e9c1d0e4f3a", "01-2025", "02-2025")
+	sub := types.NewSubscriptionCreateRequest("YouTube", 20, uuid.New(), "01-2025", "02-2025")
 	id := insertTestSubscription(t, repo, &sub)
 
+	upduuid := uuid.New()
 	updated := &types.SubscriptionUpdateRequest{
 		ID:          id,
 		ServiceName: "YouTube Premium",
 		Price:       25,
-		UserUUID:    "1a2b3c4d-5e6f-7a8b-9c0d-0e1f2a3b4c5d",
+		UserUUID:    upduuid,
 		StartDate:   "03-2025",
 		EndDate:     "04-2025",
 	}
@@ -97,7 +100,7 @@ func TestUpdateSubscription(t *testing.T) {
 	result, err := repo.GetSubscription(ctx, id)
 	require.NoError(t, err)
 	assert.Equal(t, "YouTube Premium", result.ServiceName)
-	assert.Equal(t, "1a2b3c4d-5e6f-7a8b-9c0d-0e1f2a3b4c5d", result.UserUUID)
+	assert.Equal(t, upduuid, result.UserUUID)
 	assert.Equal(t, "03-2025", result.StartDate)
 	assert.Equal(t, "04-2025", result.EndDate)
 }

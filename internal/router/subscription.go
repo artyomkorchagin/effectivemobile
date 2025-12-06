@@ -1,8 +1,6 @@
 package router
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -26,18 +24,15 @@ func (h *Handler) createSubscription(c *gin.Context) error {
 	var scr types.SubscriptionCreateRequest
 
 	if err := c.BindJSON(&scr); err != nil {
-		return HTTPError{
-			Code: http.StatusBadRequest,
-			Err:  fmt.Errorf("Error binding JSON to struct: %v", err),
-		}
+		return types.ErrBadRequest(err)
 	}
 
 	if err := h.subscriptionService.CreateSubscription(c, &scr); err != nil {
-		return HTTPError{
-			Code: http.StatusInternalServerError,
-			Err:  fmt.Errorf("Error inserting subscription into DB: %v", err),
-		}
+		return types.ErrInternalServerError(err)
 	}
+
+	h.logger.Info("Successfully created subscription", zap.Any("subscription create request", scr))
+
 	return nil
 }
 
@@ -54,19 +49,18 @@ func (h *Handler) createSubscription(c *gin.Context) error {
 func (h *Handler) getSubscription(c *gin.Context) error {
 	idRaw := c.Param("id")
 	id, err := strconv.ParseUint(idRaw, 10, 64)
+
 	if err != nil {
-		// return HTTPError{
-		// 	Code: http.StatusBadRequest,
-		// 	Err:  fmt.Errorf("Error parsing parameter id (idRaw: %v) as uint64: %v", idRaw, err),
-		// }
+		return types.ErrBadRequest(err)
 	}
+
 	sub, err := h.subscriptionService.GetSubscription(c, id)
 	if err != nil {
-		// return HTTPError{
-		// 	Code: http.StatusInternalServerError,
-		// 	Err:  fmt.Errorf("Error retrieving subscription (id: %d) from DB: %v", id, err),
-		// }
+		types.ErrInternalServerError(err)
 	}
+
+	h.logger.Info("Successfuly got subcription", zap.Any("uuid", id))
+
 	c.JSON(http.StatusOK, sub)
 	return nil
 }
@@ -91,7 +85,7 @@ func (h *Handler) updateSubscription(c *gin.Context) error {
 	if err := h.subscriptionService.UpdateSubscription(c, &sur); err != nil {
 		return types.ErrInternalServerError(err)
 	}
-	h.logger.Info("Updated subscription successfully: ", zap.Any("Subcription update request", sur))
+	h.logger.Info("Updated subscription successfully", zap.Any("Subcription update request", sur))
 	return nil
 }
 
@@ -120,7 +114,7 @@ func (h *Handler) deleteSubscription(c *gin.Context) error {
 		// 	Err:  fmt.Errorf("Error deleting subscription (id: %d) from DB: %v", id, err),
 		// }
 	}
-	log.Printf("Deleted subscription successfully: %v", id)
+	h.logger.Info("Deleted subscription successfully: ", zap.Uint64("id", id))
 	return nil
 }
 
