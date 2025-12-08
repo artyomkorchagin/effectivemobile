@@ -17,10 +17,10 @@ type Subscription struct {
 	UserUUID uuid.UUID `json:"user_id" binding:"required" validate:"required,uuid"`
 
 	// Start date of the subscription in "MM-YYYY" format
-	StartDate string `json:"start_date" binding:"required"`
+	StartDate string `json:"start_date" binding:"required" validate:"month_year"`
 
 	// End date of the subscription in "MM-YYYY" format
-	EndDate string `json:"end_date" binding:"-"`
+	EndDate string `json:"end_date" binding:"-" validate:"month_year"`
 }
 
 // SubscriptionUpdateRequest represents a request to update a subscription (PATCH).
@@ -44,11 +44,11 @@ type SubscriptionUpdateRequest struct {
 
 	// StartDate is the new start date in "MM-YYYY" format (optional)
 	// Example: "01-2025"
-	StartDate string `json:"start_date,omitempty"`
+	StartDate string `json:"start_date,omitempty" validate:"month_year"`
 
 	// EndDate is the new end date in "MM-YYYY" format (optional)
 	// Example: "02-2025"
-	EndDate string `json:"end_date,omitempty"`
+	EndDate string `json:"end_date,omitempty" validate:"month_year"`
 }
 
 // SubscriptionCreateRequest is used to create a new subscription.
@@ -66,7 +66,7 @@ type SubscriptionCreateRequest struct {
 	StartDate string `json:"start_date" binding:"required" validate:"required"`
 
 	// End date of the subscription in "MM-YYYY" format; optional
-	EndDate string `json:"end_date" binding:"-"`
+	EndDate string `json:"end_date" binding:"-" validate:"month_year"`
 }
 
 func NewSubscriptionCreateRequest(serviceName string, price uint, userUUID uuid.UUID, startDate, endDate string) SubscriptionCreateRequest {

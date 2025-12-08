@@ -8,6 +8,8 @@ import (
 	"github.com/artyomkorchagin/effectivemobile/internal/app"
 	"github.com/artyomkorchagin/effectivemobile/internal/config"
 	"github.com/artyomkorchagin/effectivemobile/internal/logger"
+	"github.com/artyomkorchagin/effectivemobile/pkg/helpers"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"go.uber.org/zap"
@@ -22,8 +24,20 @@ import (
 
 var validate *validator.Validate
 
+func init() {
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		_ = v.RegisterValidation("month_year", func(fl validator.FieldLevel) bool {
+			s := fl.Field().String()
+			if s == "" {
+				return true
+			}
+			_, err := helpers.ParseTime(s)
+			return err == nil
+		})
+	}
+}
+
 func main() {
-	validate = validator.New(validator.WithRequiredStructEnabled())
 
 	cfg, err := config.LoadConfig(validate)
 	if err != nil {
