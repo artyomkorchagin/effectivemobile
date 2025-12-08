@@ -1,6 +1,9 @@
 package types
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 // @name HTTPError
 // @description Standard error response returned by the API
@@ -23,7 +26,7 @@ type HTTPError struct {
 }
 
 func (e HTTPError) Error() string {
-	return e.Err.Error()
+	return fmt.Sprintf("%d, %s", e.Code, e.Err.Error())
 }
 
 var (

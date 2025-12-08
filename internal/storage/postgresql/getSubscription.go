@@ -8,41 +8,55 @@ import (
 	"time"
 
 	"github.com/artyomkorchagin/effectivemobile/internal/types"
+	"github.com/doug-martin/goqu/v9"
+	"github.com/google/uuid"
 )
 
 func (r *Repository) GetSubscription(ctx context.Context, subscriptionID uint64) (*types.Subscription, error) {
 	var (
-		subscription  types.Subscription
-		endDateNull   sql.NullTime
-		startDateTime time.Time
+		serviceName string
+		price       uint
+		userUUID    uuid.UUID
+		startDate   time.Time
+		endDate     *time.Time
 	)
-	query := `
-        SELECT service_name, price, user_id, start_date, end_date
-        FROM subscriptions
-        WHERE id = $1`
 
-	err := r.db.QueryRowContext(ctx, query, subscriptionID).Scan(
-		&subscription.ServiceName,
-		&subscription.Price,
-		&subscription.UserUUID,
-		&startDateTime,
-		&endDateNull,
+	query, args, err := goqu.Select("service_name", "price", "user_id", "start_date", "end_date").
+		From("subscriptions").
+		Where(goqu.C("id").Eq(subscriptionID)).
+		ToSQL()
+
+	if err != nil {
+		return nil, types.ErrInternalServerError(err)
+	}
+
+	err = r.db.QueryRowContext(ctx, query, args).Scan(
+		&serviceName,
+		&price,
+		&userUUID,
+		&startDate,
+		&endDate,
 	)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("subscription not found: %v", err)
+			return nil, types.ErrNotFound(fmt.Errorf("subscription not found: %w", err))
 		}
-		return nil, fmt.Errorf("failed to get subscription: %v", err)
+		return nil, types.ErrInternalServerError(err)
 	}
 
-	if endDateNull.Valid {
-		subscription.EndDate = endDateNull.Time.Format("01-2006")
-	} else {
-		subscription.EndDate = ""
+	sub := &types.Subscription{
+		ID:          subscriptionID,
+		ServiceName: serviceName,
+		Price:       price,
+		UserUUID:    userUUID,
+		StartDate:   startDate.Format("01-2006"),
+		EndDate:     "",
 	}
 
-	subscription.StartDate = startDateTime.Format("01-2006")
-	subscription.ID = subscriptionID
-	return &subscription, nil
+	if endDate != nil {
+		sub.EndDate = endDate.Format("01-2006")
+	}
+
+	return sub, nil
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/artyomkorchagin/effectivemobile/internal/router"
 	servicesubscription "github.com/artyomkorchagin/effectivemobile/internal/services/subscription"
 	psqlsubscription "github.com/artyomkorchagin/effectivemobile/internal/storage/postgresql"
+	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 )
 
@@ -25,9 +26,10 @@ type App struct {
 	server *http.Server
 }
 
-func New(cfg *config.Config, db *sql.DB, logger *zap.Logger) *App {
+func New(cfg *config.Config, db *sql.DB, logger *zap.Logger, validate *validator.Validate) *App {
+
 	subRepo := psqlsubscription.NewRepository(db)
-	subSvc := servicesubscription.NewService(subRepo, logger)
+	subSvc := servicesubscription.NewService(subRepo, logger, validate)
 	handler := router.NewHandler(subSvc, logger)
 	r := handler.InitRouter()
 

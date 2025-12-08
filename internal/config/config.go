@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
 )
 
@@ -13,20 +14,20 @@ type Config struct {
 }
 
 type DBConfig struct {
-	Host     string `mapstructure:"DB_HOST"`
-	Port     int    `mapstructure:"DB_PORT"`
+	Host     string `mapstructure:"DB_HOST" validate:"ip"`
+	Port     int    `mapstructure:"DB_PORT" validate:"port,required"`
 	User     string `mapstructure:"DB_USER"`
 	Password string `mapstructure:"DB_PASSWORD"`
 	Name     string `mapstructure:"DB_NAME"`
-	SSLMode  string `mapstructure:"DB_SSLMODE"`
+	SSLMode  string `mapstructure:"DB_SSLMODE" validate:"oneof=enable disable,required"`
 }
 
 type ServerConfig struct {
-	Host string `mapstructure:"SERVER_HOST"`
-	Port string `mapstructure:"SERVER_PORT"`
+	Host string `mapstructure:"SERVER_HOST" validate:"ip"`
+	Port string `mapstructure:"SERVER_PORT" validate:"port,required"`
 }
 
-func LoadConfig() (*Config, error) {
+func LoadConfig(validate *validator.Validate) (*Config, error) {
 	viper.SetConfigFile(".env")
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
@@ -41,8 +42,8 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
-	if err := cfg.Validate(); err != nil {
-		return nil, fmt.Errorf("invalid config: %w", err)
+	if err := validate.Struct(cfg); err != nil {
+		return nil, fmt.Errorf("failed to validate config: %w", err)
 	}
 
 	return &cfg, nil
@@ -56,29 +57,4 @@ func (cfg *Config) GetDSN() string {
 		cfg.DB.User,
 		cfg.DB.Password,
 		cfg.DB.SSLMode)
-}
-
-func (cfg *Config) Validate() error {
-	if cfg.DB.Host == "" {
-		return fmt.Errorf("DB_HOST is required")
-	}
-	if cfg.DB.Password == "" {
-		return fmt.Errorf("DB_PASSWORD is required")
-	}
-	if cfg.DB.SSLMode == "" {
-		return fmt.Errorf("DB_SSLMODE is required")
-	}
-	if cfg.DB.Host == "" {
-		return fmt.Errorf("DB_HOST is required")
-	}
-	if cfg.DB.User == "" {
-		return fmt.Errorf("DB_USER is required")
-	}
-	if cfg.DB.Name == "" {
-		return fmt.Errorf("DB_NAME is required")
-	}
-	if cfg.Server.Port == "" {
-		return fmt.Errorf("SERVER_PORT is required")
-	}
-	return nil
 }

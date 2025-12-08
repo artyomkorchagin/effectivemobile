@@ -4,27 +4,45 @@ import (
 	"context"
 
 	"github.com/artyomkorchagin/effectivemobile/internal/types"
+	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 )
 
 type Service struct {
-	repo   ReadWriter
-	logger *zap.Logger // по хорошему нужно сделать кастомный интерфейс
+	repo     ReadWriter
+	logger   *zap.Logger // по хорошему нужно сделать кастомный интерфейс
+	validate *validator.Validate
 }
 
-func NewService(repo ReadWriter, logger *zap.Logger) *Service {
+func NewService(repo ReadWriter, logger *zap.Logger, validate *validator.Validate) *Service {
 	return &Service{
-		repo:   repo,
-		logger: logger,
+		repo:     repo,
+		logger:   logger,
+		validate: validate,
 	}
 }
 
 func (s *Service) CreateSubscription(ctx context.Context, scr *types.SubscriptionCreateRequest) error {
+
+	if err := s.validate.Struct(scr); err != nil {
+		types.ErrBadRequest(err)
+	}
+
 	return s.repo.CreateSubscription(ctx, scr)
 }
 
 func (s *Service) DeleteSubscription(ctx context.Context, subscriptionID uint64) error {
-	return s.repo.DeleteSubscription(ctx, subscriptionID)
+	rows, err := s.repo.DeleteSubscription(ctx, subscriptionID)
+
+	if err != nil {
+		return err
+	}
+
+	if rows == 0 {
+		return types.ErrNotFound(err)
+	}
+
+	return nil
 }
 
 func (s *Service) GetAllSubscriptions(ctx context.Context) ([]*types.Subscription, error) {
@@ -35,10 +53,20 @@ func (s *Service) GetSubscription(ctx context.Context, subscriptionID uint64) (*
 	return s.repo.GetSubscription(ctx, subscriptionID)
 }
 
-func (s *Service) GetSumOfSubscriptions(ctx context.Context, filter *types.Filter) (uint, error) {
+func (s *Service) GetSumOfSubscriptions(ctx context.Context, filter types.Filter) (uint, error) {
+
+	if err := s.validate.Struct(filter); err != nil {
+		return 0, types.ErrBadRequest(err)
+	}
+
 	return s.repo.GetSumOfSubscriptions(ctx, filter)
 }
 
 func (s *Service) UpdateSubscription(ctx context.Context, sur *types.SubscriptionUpdateRequest) error {
+
+	if err := s.validate.Struct(sur); err != nil {
+		return types.ErrBadRequest(err)
+	}
+
 	return s.repo.UpdateSubscription(ctx, sur)
 }

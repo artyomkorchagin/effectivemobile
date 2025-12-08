@@ -8,6 +8,7 @@ import (
 	"github.com/artyomkorchagin/effectivemobile/internal/app"
 	"github.com/artyomkorchagin/effectivemobile/internal/config"
 	"github.com/artyomkorchagin/effectivemobile/internal/logger"
+	"github.com/go-playground/validator/v10"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"go.uber.org/zap"
 )
@@ -19,8 +20,12 @@ import (
 // @host			localhost:3000
 // @BasePath		/
 
+var validate *validator.Validate
+
 func main() {
-	cfg, err := config.LoadConfig()
+	validate = validator.New(validator.WithRequiredStructEnabled())
+
+	cfg, err := config.LoadConfig(validate)
 	if err != nil {
 		panic("failed to load config: " + err.Error())
 	}
@@ -58,7 +63,7 @@ func main() {
 		zapLogger.Fatal("failed to run migrations", zap.Error(err))
 	}
 
-	application := app.New(cfg, db, zapLogger)
+	application := app.New(cfg, db, zapLogger, validate)
 	if err := application.Run(); err != nil {
 		zapLogger.Fatal("application error", zap.Error(err))
 	}

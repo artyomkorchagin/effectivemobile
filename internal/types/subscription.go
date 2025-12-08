@@ -8,13 +8,13 @@ type Subscription struct {
 	ID uint64 `json:"id" binding:"required"`
 
 	// Name of the service
-	ServiceName string `json:"service_name" binding:"required"`
+	ServiceName string `json:"service_name" binding:"required" validate:"required"`
 
 	// Monthly price of the subscription in USD cents or integer units
-	Price uint `json:"price" binding:"required"`
+	Price uint `json:"price" binding:"required" validate:"required"`
 
 	// Unique identifier of the user who owns this subscription
-	UserUUID uuid.UUID `json:"user_id" binding:"required"`
+	UserUUID uuid.UUID `json:"user_id" binding:"required" validate:"required,uuid"`
 
 	// Start date of the subscription in "MM-YYYY" format
 	StartDate string `json:"start_date" binding:"required"`
@@ -40,7 +40,7 @@ type SubscriptionUpdateRequest struct {
 
 	// UserUUID is the new unique identifier of the user (optional)
 	// Example: "123e4567-e89b-42d3-a456-556642440000"
-	UserUUID uuid.UUID `json:"user_id,omitempty"`
+	UserUUID uuid.UUID `json:"user_id,omitempty" validate:"uuid"`
 
 	// StartDate is the new start date in "MM-YYYY" format (optional)
 	// Example: "01-2025"
@@ -60,10 +60,10 @@ type SubscriptionCreateRequest struct {
 	Price uint `json:"price" binding:"required"`
 
 	// Unique identifier of the user who owns this subscription (uuid)
-	UserUUID uuid.UUID `json:"user_id" binding:"required"`
+	UserUUID uuid.UUID `json:"user_id" binding:"required" validate:"required,uuid"`
 
 	// Start date of the subscription in "MM-YYYY" format
-	StartDate string `json:"start_date" binding:"required"`
+	StartDate string `json:"start_date" binding:"required" validate:"required"`
 
 	// End date of the subscription in "MM-YYYY" format; optional
 	EndDate string `json:"end_date" binding:"-"`

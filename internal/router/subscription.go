@@ -28,7 +28,7 @@ func (h *Handler) createSubscription(c *gin.Context) error {
 	}
 
 	if err := h.subscriptionService.CreateSubscription(c, &scr); err != nil {
-		return types.ErrInternalServerError(err)
+		return err
 	}
 
 	h.logger.Info("Successfully created subscription", zap.Any("subscription create request", scr))
@@ -44,6 +44,7 @@ func (h *Handler) createSubscription(c *gin.Context) error {
 // @Param        id   path    int     true  "Subscription ID"
 // @Success      200  {object}  types.Subscription
 // @Failure      400  {object}  HTTPError "Bad request"
+// @Failure      404  {object}  HTTPError "Not found"
 // @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions/{id} [get]
 func (h *Handler) getSubscription(c *gin.Context) error {
@@ -56,7 +57,7 @@ func (h *Handler) getSubscription(c *gin.Context) error {
 
 	sub, err := h.subscriptionService.GetSubscription(c, id)
 	if err != nil {
-		types.ErrInternalServerError(err)
+		return err
 	}
 
 	h.logger.Info("Successfuly got subcription", zap.Any("uuid", id))
@@ -74,6 +75,7 @@ func (h *Handler) getSubscription(c *gin.Context) error {
 // @Param        subscription body    types.SubscriptionUpdateRequest  true  "Fields to update"
 // @Success      200  "No Content"
 // @Failure      400  {object}  HTTPError "Bad request"
+// @Failure      404  {object}  HTTPError "Not found"
 // @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions [patch]
 func (h *Handler) updateSubscription(c *gin.Context) error {
@@ -82,9 +84,11 @@ func (h *Handler) updateSubscription(c *gin.Context) error {
 	if err := c.BindJSON(&sur); err != nil {
 		return types.ErrBadRequest(err)
 	}
+
 	if err := h.subscriptionService.UpdateSubscription(c, &sur); err != nil {
-		return types.ErrInternalServerError(err)
+		return err
 	}
+
 	h.logger.Info("Updated subscription successfully", zap.Any("Subcription update request", sur))
 	return nil
 }
@@ -97,22 +101,17 @@ func (h *Handler) updateSubscription(c *gin.Context) error {
 // @Param        id   path    int     true  "Subscription ID"
 // @Success      200  "No Content"
 // @Failure      400  {object}  HTTPError "Bad request"
+// @Failure      404  {object}  HTTPError "Not found"
 // @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions/{id} [delete]
 func (h *Handler) deleteSubscription(c *gin.Context) error {
 	idRaw := c.Param("id")
 	id, err := strconv.ParseUint(idRaw, 10, 64)
 	if err != nil {
-		// return HTTPError{
-		// 	Code: http.StatusBadRequest,
-		// 	Err:  fmt.Errorf("Error parsing parameter id (idRaw: %v) as uint64: %v", idRaw, err),
-		// }
+		return types.ErrBadRequest(err)
 	}
 	if err := h.subscriptionService.DeleteSubscription(c, id); err != nil {
-		// return HTTPError{
-		// 	Code: http.StatusInternalServerError,
-		// 	Err:  fmt.Errorf("Error deleting subscription (id: %d) from DB: %v", id, err),
-		// }
+		return err
 	}
 	h.logger.Info("Deleted subscription successfully: ", zap.Uint64("id", id))
 	return nil
@@ -129,7 +128,7 @@ func (h *Handler) deleteSubscription(c *gin.Context) error {
 func (h *Handler) getAllSubscriptions(c *gin.Context) error {
 	subs, err := h.subscriptionService.GetAllSubscriptions(c)
 	if err != nil {
-		return types.ErrInternalServerError(err)
+		return err
 	}
 	h.logger.Info("Got all subscriptions successfully", zap.Any("subscriptions", subs))
 	c.JSON(http.StatusOK, subs)
@@ -151,14 +150,16 @@ func (h *Handler) getAllSubscriptions(c *gin.Context) error {
 // @Router       /subscriptions/sum [get]
 func (h *Handler) getSumOfSubscriptions(c *gin.Context) error {
 	filter := types.Filter{}
+
 	if err := c.Bind(&filter); err != nil {
 		return types.ErrBadRequest(err)
 	}
-	sum, err := h.subscriptionService.GetSumOfSubscriptions(c, &filter)
+
+	sum, err := h.subscriptionService.GetSumOfSubscriptions(c, filter)
 	if err != nil {
-		return types.ErrInternalServerError(err)
+		return err
 	}
-	h.logger.Info("got sum of subscriptions successfully: ", zap.Uint("sum", sum))
+	h.logger.Info("Got sum of subscriptions successfully", zap.Uint("sum", sum))
 	c.JSON(http.StatusOK, gin.H{"sum": sum})
 	return nil
 }

@@ -18,8 +18,8 @@ func (h *Handler) wrap(fn handlerFunc) gin.HandlerFunc {
 				h.logger.Error("error", zap.Error(httpErr))
 				c.JSON(httpErr.Code, gin.H{"error": httpErr.Err.Error()})
 			} else {
-				h.logger.Error("error", zap.Error(err))
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				h.logger.Error("unexpected error", zap.Error(err))
+				c.JSON(http.StatusInternalServerError, gin.H{"unexpected error": err.Error()})
 			}
 		}
 	}
