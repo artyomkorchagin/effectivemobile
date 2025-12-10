@@ -2,8 +2,8 @@ package psqlsubscription
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/artyomkorchagin/effectivemobile/internal/types"
 	"github.com/artyomkorchagin/effectivemobile/pkg/helpers"
@@ -16,7 +16,7 @@ func (r *Repository) CreateSubscription(ctx context.Context, scr *types.Subscrip
 		return types.ErrBadRequest(err)
 	}
 
-	var endDate sql.NullTime
+	var endDate *time.Time
 
 	if scr.EndDate != "" {
 		parsedEndDate, err := helpers.ParseTime(scr.EndDate)
@@ -28,8 +28,8 @@ func (r *Repository) CreateSubscription(ctx context.Context, scr *types.Subscrip
 			return types.ErrBadRequest(fmt.Errorf("end date must be after start date"))
 		}
 
-		endDate.Valid = true
-		endDate.Time = parsedEndDate
+		endDate = &parsedEndDate
+
 	}
 
 	sql, args, err := goqu.Insert("subscriptions").
@@ -54,7 +54,7 @@ func (r *Repository) CreateSubscription(ctx context.Context, scr *types.Subscrip
 	}
 
 	if rows == 0 {
-		return types.ErrBadRequest(err)
+		return types.ErrConflict(err)
 	}
 
 	return nil

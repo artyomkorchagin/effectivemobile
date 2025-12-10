@@ -1,80 +1,102 @@
 package types
 
-import "github.com/google/uuid"
+import (
+	"time"
 
-// Subscription represents a user's subscription to a service.
+	"github.com/artyomkorchagin/effectivemobile/pkg/helpers"
+	"github.com/google/uuid"
+)
+
 type Subscription struct {
-	// Unique identifier for the subscription
-	ID uint64 `json:"id" binding:"required"`
-
-	// Name of the service
-	ServiceName string `json:"service_name" binding:"required" validate:"required"`
-
-	// Monthly price of the subscription in USD cents or integer units
-	Price uint `json:"price" binding:"required" validate:"required"`
-
-	// Unique identifier of the user who owns this subscription
-	UserUUID uuid.UUID `json:"user_id" binding:"required" validate:"required,uuid"`
-
-	// Start date of the subscription in "MM-YYYY" format
-	StartDate string `json:"start_date" binding:"required" validate:"month_year"`
-
-	// End date of the subscription in "MM-YYYY" format
-	EndDate string `json:"end_date" binding:"-" validate:"month_year"`
+	ID          uint64     `json:"id" binding:"required"`
+	ServiceName string     `json:"service_name" binding:"required" validate:"required"`
+	Price       uint       `json:"price" binding:"required" validate:"required"`
+	UserUUID    uuid.UUID  `json:"user_id" binding:"required" validate:"required,uuid"`
+	StartDate   time.Time  `json:"start_date" binding:"required" validate:"month_year"`
+	EndDate     *time.Time `json:"end_date" binding:"-" validate:"month_year"`
 }
 
-// SubscriptionUpdateRequest represents a request to update a subscription (PATCH).
-// Only the fields provided will be updated.
-type SubscriptionUpdateRequest struct {
-	// ID is the unique identifier of the subscription to update
-	// Required: yes
-	ID uint64 `json:"id" binding:"required"`
-
-	// ServiceName is the new name of the service (optional)
-	// Example: "Yandex Plus"
+type SubscriptionUpdateRequestJSON struct {
+	ID          uint64 `json:"id" binding:"required"`
 	ServiceName string `json:"service_name,omitempty"`
-
-	// Price is the new monthly price in USD cents or integer units (optional)
-	// Example: 1000
-	Price uint `json:"price,omitempty"`
-
-	// UserUUID is the new unique identifier of the user (optional)
-	// Example: "123e4567-e89b-42d3-a456-556642440000"
-	UserUUID uuid.UUID `json:"user_id,omitempty" validate:"uuid"`
-
-	// StartDate is the new start date in "MM-YYYY" format (optional)
-	// Example: "01-2025"
-	StartDate string `json:"start_date,omitempty" validate:"month_year"`
-
-	// EndDate is the new end date in "MM-YYYY" format (optional)
-	// Example: "02-2025"
-	EndDate string `json:"end_date,omitempty" validate:"month_year"`
+	Price       uint   `json:"price,omitempty"`
+	UserUUID    string `json:"user_id,omitempty"`
+	StartDate   string `json:"start_date,omitempty"`
+	EndDate     string `json:"end_date,omitempty"`
 }
 
-// SubscriptionCreateRequest is used to create a new subscription.
-type SubscriptionCreateRequest struct {
-	// Name of the service
+type SubscriptionUpdateRequest struct {
+	ID          uint64 `validate:"required"`
+	ServiceName string `validate:"min=5,max=30"`
+	Price       uint
+	UserUUID    uuid.UUID  `validate:"uuid"`
+	StartDate   *time.Time `validate:"month_year"`
+	EndDate     *time.Time `validate:"month_year"`
+}
+
+type SubscriptionCreateRequestJSON struct {
 	ServiceName string `json:"service_name" binding:"required"`
-
-	// Monthly price of the subscription in rubles
-	Price uint `json:"price" binding:"required"`
-
-	// Unique identifier of the user who owns this subscription (uuid)
-	UserUUID uuid.UUID `json:"user_id" binding:"required" validate:"required,uuid"`
-
-	// Start date of the subscription in "MM-YYYY" format
-	StartDate string `json:"start_date" binding:"required" validate:"required"`
-
-	// End date of the subscription in "MM-YYYY" format; optional
-	EndDate string `json:"end_date" binding:"-" validate:"month_year"`
+	Price       uint   `json:"price" binding:"required"`
+	UserUUID    string `json:"user_id" binding:"required"`
+	StartDate   string `json:"start_date" binding:"required"`
+	EndDate     string `json:"end_date" binding:"-"`
 }
 
-func NewSubscriptionCreateRequest(serviceName string, price uint, userUUID uuid.UUID, startDate, endDate string) SubscriptionCreateRequest {
-	return SubscriptionCreateRequest{
-		ServiceName: serviceName,
-		Price:       price,
-		UserUUID:    userUUID,
-		StartDate:   startDate,
-		EndDate:     endDate,
+type SubscriptionCreateRequest struct {
+	ServiceName string `validate:"min=5,max=30"`
+	Price       uint
+	UserUUID    uuid.UUID  `validate:"required,uuid"`
+	StartDate   time.Time  `validate:"required,month_year"`
+	EndDate     *time.Time `validate:"month_year"`
+}
+
+func NewSubscriptionCreateRequest(scrj SubscriptionCreateRequestJSON) (*SubscriptionCreateRequest, error) {
+
+	userid, err := uuid.Parse(scrj.UserUUID)
+	if err != nil {
+		return nil, err
 	}
+
+	start, err := helpers.ParseTime(scrj.StartDate)
+	if err != nil {
+		return nil, err
+	}
+	end, err := helpers.ParseTime(scrj.StartDate)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SubscriptionCreateRequest{
+		ServiceName: scrj.ServiceName,
+		Price:       scrj.Price,
+		UserUUID:    userid,
+		StartDate:   start,
+		EndDate:     &end,
+	}, nil
+}
+
+func NewSubscriptionUpdateRequest(surj SubscriptionUpdateRequestJSON) (*SubscriptionUpdateRequest, error) {
+
+	userid, err := uuid.Parse(surj.UserUUID)
+	if err != nil {
+		return nil, err
+	}
+
+	start, err := helpers.ParseTime(surj.StartDate)
+	if err != nil {
+		return nil, err
+	}
+
+	end, err := helpers.ParseTime(surj.StartDate)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SubscriptionUpdateRequest{
+		ServiceName: surj.ServiceName,
+		Price:       surj.Price,
+		UserUUID:    userid,
+		StartDate:   &start,
+		EndDate:     &end,
+	}, nil
 }

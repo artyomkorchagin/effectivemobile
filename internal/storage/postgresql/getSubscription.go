@@ -50,12 +50,8 @@ func (r *Repository) GetSubscription(ctx context.Context, subscriptionID uint64)
 		ServiceName: serviceName,
 		Price:       price,
 		UserUUID:    userUUID,
-		StartDate:   startDate.Format("01-2006"),
-		EndDate:     "",
-	}
-
-	if endDate != nil {
-		sub.EndDate = endDate.Format("01-2006")
+		StartDate:   startDate,
+		EndDate:     endDate,
 	}
 
 	return sub, nil

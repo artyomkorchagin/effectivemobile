@@ -21,18 +21,23 @@ import (
 // @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions [post]
 func (h *Handler) createSubscription(c *gin.Context) error {
-	var scr types.SubscriptionCreateRequest
+	var scrj types.SubscriptionCreateRequestJSON
 
-	if err := c.BindJSON(&scr); err != nil {
+	if err := c.BindJSON(&scrj); err != nil {
 		return types.ErrBadRequest(err)
 	}
 
-	if err := h.subscriptionService.CreateSubscription(c, &scr); err != nil {
-		return err
+	scr, err := types.NewSubscriptionCreateRequest(scrj)
+	if err != nil {
+		return types.ErrBadRequest(err)
+	}
+
+	if err := h.subscriptionService.CreateSubscription(c, scr); err != nil {
+		return err // обработается с помощью wrap(handlerFunc) gin.HandlerFunc
 	}
 
 	h.logger.Info("Successfully created subscription", zap.Any("subscription create request", scr))
-
+	c.JSON(http.StatusOK, nil)
 	return nil
 }
 
@@ -79,17 +84,23 @@ func (h *Handler) getSubscription(c *gin.Context) error {
 // @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions [patch]
 func (h *Handler) updateSubscription(c *gin.Context) error {
-	var sur types.SubscriptionUpdateRequest
+	var surj types.SubscriptionUpdateRequestJSON
 
-	if err := c.BindJSON(&sur); err != nil {
+	if err := c.BindJSON(&surj); err != nil {
 		return types.ErrBadRequest(err)
 	}
 
-	if err := h.subscriptionService.UpdateSubscription(c, &sur); err != nil {
+	sur, err := types.NewSubscriptionUpdateRequest(surj)
+	if err != nil {
+		return types.ErrBadRequest(err)
+	}
+
+	if err := h.subscriptionService.UpdateSubscription(c, sur); err != nil {
 		return err
 	}
 
 	h.logger.Info("Updated subscription successfully", zap.Any("Subcription update request", sur))
+	c.JSON(http.StatusOK, nil)
 	return nil
 }
 
@@ -110,10 +121,12 @@ func (h *Handler) deleteSubscription(c *gin.Context) error {
 	if err != nil {
 		return types.ErrBadRequest(err)
 	}
+
 	if err := h.subscriptionService.DeleteSubscription(c, id); err != nil {
 		return err
 	}
 	h.logger.Info("Deleted subscription successfully: ", zap.Uint64("id", id))
+	c.JSON(http.StatusOK, nil)
 	return nil
 }
 

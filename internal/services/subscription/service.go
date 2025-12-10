@@ -2,6 +2,7 @@ package servicesubscription
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/artyomkorchagin/effectivemobile/internal/types"
 	"github.com/go-playground/validator/v10"
@@ -26,6 +27,10 @@ func (s *Service) CreateSubscription(ctx context.Context, scr *types.Subscriptio
 
 	if err := s.validate.Struct(scr); err != nil {
 		types.ErrBadRequest(err)
+	}
+
+	if scr.EndDate.Before(scr.StartDate) {
+		return types.ErrBadRequest(fmt.Errorf("end date must be after start date"))
 	}
 
 	return s.repo.CreateSubscription(ctx, scr)
@@ -66,6 +71,10 @@ func (s *Service) UpdateSubscription(ctx context.Context, sur *types.Subscriptio
 
 	if err := s.validate.Struct(sur); err != nil {
 		return types.ErrBadRequest(err)
+	}
+
+	if sur.StartDate != nil && sur.EndDate.Before(*sur.StartDate) {
+		return types.ErrBadRequest(fmt.Errorf("end date must be after start date"))
 	}
 
 	return s.repo.UpdateSubscription(ctx, sur)
