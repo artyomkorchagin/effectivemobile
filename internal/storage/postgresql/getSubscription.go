@@ -5,21 +5,14 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/artyomkorchagin/effectivemobile/internal/types"
 	"github.com/doug-martin/goqu/v9"
-	"github.com/google/uuid"
 )
 
 func (r *Repository) GetSubscription(ctx context.Context, subscriptionID uint64) (*types.Subscription, error) {
-	var (
-		serviceName string
-		price       uint
-		userUUID    uuid.UUID
-		startDate   time.Time
-		endDate     *time.Time
-	)
+
+	var sub types.Subscription
 
 	query, args, err := goqu.Select("service_name", "price", "user_id", "start_date", "end_date").
 		From("subscriptions").
@@ -30,12 +23,12 @@ func (r *Repository) GetSubscription(ctx context.Context, subscriptionID uint64)
 		return nil, types.ErrInternalServerError(err)
 	}
 
-	err = r.db.QueryRowContext(ctx, query, args).Scan(
-		&serviceName,
-		&price,
-		&userUUID,
-		&startDate,
-		&endDate,
+	err = r.db.QueryRowContext(ctx, query, args...).Scan(
+		&sub.ServiceName,
+		&sub.Price,
+		&sub.UserUUID,
+		&sub.StartDate,
+		&sub.EndDate,
 	)
 
 	if err != nil {
@@ -45,14 +38,5 @@ func (r *Repository) GetSubscription(ctx context.Context, subscriptionID uint64)
 		return nil, types.ErrInternalServerError(err)
 	}
 
-	sub := &types.Subscription{
-		ID:          subscriptionID,
-		ServiceName: serviceName,
-		Price:       price,
-		UserUUID:    userUUID,
-		StartDate:   startDate,
-		EndDate:     endDate,
-	}
-
-	return sub, nil
+	return &sub, nil
 }

@@ -37,14 +37,8 @@ func (s *Service) CreateSubscription(ctx context.Context, scr *types.Subscriptio
 }
 
 func (s *Service) DeleteSubscription(ctx context.Context, subscriptionID uint64) error {
-	rows, err := s.repo.DeleteSubscription(ctx, subscriptionID)
-
-	if err != nil {
+	if err := s.repo.DeleteSubscription(ctx, subscriptionID); err != nil {
 		return err
-	}
-
-	if rows == 0 {
-		return types.ErrNotFound(err)
 	}
 
 	return nil

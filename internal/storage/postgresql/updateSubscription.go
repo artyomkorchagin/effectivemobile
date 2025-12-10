@@ -40,12 +40,12 @@ func (r *Repository) UpdateSubscription(ctx context.Context, sur *types.Subscrip
 
 	update = update.Set(setValues)
 
-	sqlStr, args, err := update.ToSQL()
+	query, args, err := update.ToSQL()
 	if err != nil {
 		return types.ErrInternalServerError(fmt.Errorf("failed to build update query: %w", err))
 	}
 
-	result, err := r.db.ExecContext(ctx, sqlStr, args...)
+	result, err := r.db.ExecContext(ctx, query, args...)
 	if err != nil {
 		return types.ErrInternalServerError(fmt.Errorf("failed to update subscription: %w", err))
 	}
