@@ -162,9 +162,14 @@ func (h *Handler) getAllSubscriptions(c *gin.Context) error {
 // @Failure      500  {object}  HTTPError "Internal server error"
 // @Router       /subscriptions/sum [get]
 func (h *Handler) getSumOfSubscriptions(c *gin.Context) error {
-	filter := types.Filter{}
+	fj := types.FilterJSON{}
 
-	if err := c.Bind(&filter); err != nil {
+	if err := c.Bind(&fj); err != nil {
+		return types.ErrBadRequest(err)
+	}
+
+	filter, err := types.NewFilter(fj)
+	if err != nil {
 		return types.ErrBadRequest(err)
 	}
 

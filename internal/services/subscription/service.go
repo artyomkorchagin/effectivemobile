@@ -52,7 +52,7 @@ func (s *Service) GetSubscription(ctx context.Context, subscriptionID uint64) (*
 	return s.repo.GetSubscription(ctx, subscriptionID)
 }
 
-func (s *Service) GetSumOfSubscriptions(ctx context.Context, filter types.Filter) (uint, error) {
+func (s *Service) GetSumOfSubscriptions(ctx context.Context, filter *types.Filter) (uint, error) {
 
 	if err := s.validate.Struct(filter); err != nil {
 		return 0, types.ErrBadRequest(err)
