@@ -12,7 +12,7 @@ import (
 func (r *Repository) UpdateSubscription(ctx context.Context, sur *types.SubscriptionUpdateRequest) error {
 	update := goqu.Update("subscriptions").Where(goqu.C("id").Eq(sur.ID))
 
-	setValues := make(goqu.Record)
+	setValues := make(goqu.Record, 5)
 
 	if sur.ServiceName != "" {
 		setValues["service_name"] = sur.ServiceName
@@ -45,13 +45,13 @@ func (r *Repository) UpdateSubscription(ctx context.Context, sur *types.Subscrip
 		return types.ErrInternalServerError(fmt.Errorf("failed to build update query: %w", err))
 	}
 
-	result, err := r.db.ExecContext(ctx, query, args...)
+	res, err := r.db.ExecContext(ctx, query, args...)
 	if err != nil {
 		return types.ErrInternalServerError(fmt.Errorf("failed to update subscription: %w", err))
 	}
 
-	rowsAffected, _ := result.RowsAffected()
-	if rowsAffected == 0 {
+	rows, _ := res.RowsAffected()
+	if rows == 0 {
 		return types.ErrNotFound(fmt.Errorf("subscription not found with id %d", sur.ID))
 	}
 
