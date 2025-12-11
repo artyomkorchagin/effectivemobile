@@ -28,7 +28,6 @@ func init() {
 
 	validate = validator.New(validator.WithRequiredStructEnabled())
 
-	// ✅ REGISTER CUSTOM VALIDATOR IMMEDIATELY
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		_ = v.RegisterValidation("month_year", func(fl validator.FieldLevel) bool {
 			s := fl.Field().String()
