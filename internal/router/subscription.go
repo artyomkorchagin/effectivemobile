@@ -65,7 +65,7 @@ func (h *Handler) getSubscription(c *gin.Context) error {
 		return err
 	}
 
-	h.logger.Info("Successfuly got subcription", zap.Any("uuid", id))
+	h.logger.Info("Successfuly got subscription", zap.Uint64("id", id))
 
 	c.JSON(http.StatusOK, sub)
 	return nil
@@ -99,7 +99,7 @@ func (h *Handler) updateSubscription(c *gin.Context) error {
 		return err
 	}
 
-	h.logger.Info("Updated subscription successfully", zap.Any("Subcription update request", sur))
+	h.logger.Info("Updated subscription successfully", zap.Any("Subscription update request", sur))
 	c.JSON(http.StatusOK, nil)
 	return nil
 }

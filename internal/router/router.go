@@ -43,7 +43,6 @@ func (h *Handler) InitRouter() *gin.Engine {
 		main.GET("/status", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"status": "ok"})
 		})
-
 		main.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 	h.logger.Info("Routes initialized")

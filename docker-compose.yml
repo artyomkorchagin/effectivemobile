@@ -6,13 +6,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      SERVER_HOST: db
-      SERVER_PORT: ${SERVER_PORT}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_SSLMODE: ${DB_SSLMODE}
     ports:
       - "3000:3000"
 

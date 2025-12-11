@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -39,7 +40,7 @@ func New(
 	r := handler.InitRouter()
 
 	srv := &http.Server{
-		Addr:    cfg.Server.Host + ":" + cfg.Server.Port,
+		Addr:    fmt.Sprintf("%v:%v", cfg.Server.Host, cfg.Server.Port),
 		Handler: r,
 	}
 

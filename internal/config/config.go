@@ -14,26 +14,29 @@ type Config struct {
 }
 
 type DBConfig struct {
-	Host     string `mapstructure:"DB_HOST" validate:"ip"`
-	Port     int    `mapstructure:"DB_PORT" validate:"port,required"`
-	User     string `mapstructure:"DB_USER"`
-	Password string `mapstructure:"DB_PASSWORD"`
-	Name     string `mapstructure:"DB_NAME"`
-	SSLMode  string `mapstructure:"DB_SSLMODE" validate:"oneof=enable disable,required"`
+	Host     string `mapstructure:"DB_HOST" validate:"required,hostname|ip"`
+	Port     uint   `mapstructure:"DB_PORT" validate:"port,required"`
+	User     string `mapstructure:"DB_USER" validate:"required"`
+	Password string `mapstructure:"DB_PASSWORD" validate:"required"`
+	Name     string `mapstructure:"DB_NAME" validate:"required"`
+	SSLMode  string `mapstructure:"DB_SSLMODE" validate:"oneof=disable allow prefer require verify-ca verify-full,required"`
 }
 
 type ServerConfig struct {
-	Host string `mapstructure:"SERVER_HOST" validate:"ip"`
-	Port string `mapstructure:"SERVER_PORT" validate:"port,required"`
+	Host string `mapstructure:"SERVER_HOST" validate:"hostname|ip"`
+	Port uint   `mapstructure:"SERVER_PORT" validate:"port,required"`
 }
 
 func LoadConfig(validate *validator.Validate) (*Config, error) {
 	viper.SetConfigFile(".env")
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			return nil, fmt.Errorf("failed to read config: %w", err)
-		}
-	}
+
+	viper.SetDefault("DB_HOST", "localhost")
+	viper.SetDefault("DB_PORT", 5432)
+	viper.SetDefault("SERVER_HOST", "0.0.0.0")
+	viper.SetDefault("SERVER_PORT", 8080)
+	viper.SetDefault("DB_SSLMODE", "disable")
+
+	_ = viper.ReadInConfig()
 
 	viper.AutomaticEnv()
 

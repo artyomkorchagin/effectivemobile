@@ -35,19 +35,19 @@ type SubscriptionUpdateRequest struct {
 }
 
 type SubscriptionCreateRequestJSON struct {
-	ServiceName string `json:"service_name" binding:"required"`
+	ServiceName string `json:"service_name" binding:"required" `
 	Price       uint   `json:"price" binding:"required"`
 	UserUUID    string `json:"user_id" binding:"required"`
-	StartDate   string `json:"start_date" binding:"required"`
-	EndDate     string `json:"end_date" binding:"-"`
+	StartDate   string `json:"start_date" binding:"required" validate:"required,month_year"`
+	EndDate     string `json:"end_date" validate:"omitempty,month_year"`
 }
 
 type SubscriptionCreateRequest struct {
 	ServiceName string     `validate:"required,min=5,max=30"`
 	Price       uint       `validate:"required,min=0"`
 	UserUUID    uuid.UUID  `validate:"required,uuid"`
-	StartDate   time.Time  `validate:"required,month_year"`
-	EndDate     *time.Time `validate:"month_year"`
+	StartDate   time.Time  `validate:"required"`
+	EndDate     *time.Time `validate:"omitempty"`
 }
 
 func NewSubscriptionCreateRequest(scrj SubscriptionCreateRequestJSON) (*SubscriptionCreateRequest, error) {

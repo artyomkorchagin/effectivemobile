@@ -38,5 +38,7 @@ func (r *Repository) GetSubscription(ctx context.Context, subscriptionID uint64)
 		return nil, types.ErrInternalServerError(err)
 	}
 
+	sub.ID = subscriptionID
+
 	return &sub, nil
 }

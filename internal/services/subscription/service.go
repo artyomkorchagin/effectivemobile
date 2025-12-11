@@ -26,11 +26,13 @@ func NewService(repo ReadWriter, logger *zap.Logger, validate *validator.Validat
 func (s *Service) CreateSubscription(ctx context.Context, scr *types.SubscriptionCreateRequest) error {
 
 	if err := s.validate.Struct(scr); err != nil {
-		types.ErrBadRequest(err)
+		return types.ErrBadRequest(err)
 	}
 
-	if scr.EndDate.Before(scr.StartDate) {
-		return types.ErrBadRequest(fmt.Errorf("end date must be after start date"))
+	if scr.EndDate != nil {
+		if scr.EndDate.Before(scr.StartDate) {
+			return types.ErrBadRequest(fmt.Errorf("end date must be after start date"))
+		}
 	}
 
 	return s.repo.CreateSubscription(ctx, scr)
@@ -67,9 +69,10 @@ func (s *Service) UpdateSubscription(ctx context.Context, sur *types.Subscriptio
 		return types.ErrBadRequest(err)
 	}
 
-	if sur.StartDate != nil && sur.EndDate.Before(*sur.StartDate) {
-		return types.ErrBadRequest(fmt.Errorf("end date must be after start date"))
+	if sur.EndDate != nil && sur.StartDate != nil {
+		if sur.EndDate.Before(*sur.StartDate) {
+			return types.ErrBadRequest(fmt.Errorf("end date must be after start date"))
+		}
 	}
-
 	return s.repo.UpdateSubscription(ctx, sur)
 }

@@ -24,7 +24,7 @@ func (r *Repository) DeleteSubscription(ctx context.Context, subscriptionID uint
 	}
 	rows, _ := res.RowsAffected()
 	if rows == 0 {
-		return types.ErrNotFound(fmt.Errorf("subcription not found"))
+		return types.ErrNotFound(fmt.Errorf("subscription not found"))
 	}
 
 	return nil

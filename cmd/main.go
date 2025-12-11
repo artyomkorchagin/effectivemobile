@@ -25,6 +25,10 @@ import (
 var validate *validator.Validate
 
 func init() {
+
+	validate = validator.New(validator.WithRequiredStructEnabled())
+
+	// ✅ REGISTER CUSTOM VALIDATOR IMMEDIATELY
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		_ = v.RegisterValidation("month_year", func(fl validator.FieldLevel) bool {
 			s := fl.Field().String()
@@ -55,7 +59,7 @@ func main() {
 	}
 	defer zapLogger.Sync()
 
-	zapLogger.Info("Starting application", zap.String("port", cfg.Server.Port))
+	zapLogger.Info("Starting application", zap.Uint("port", cfg.Server.Port))
 
 	db, err := sql.Open("pgx", cfg.GetDSN())
 	if err != nil {
