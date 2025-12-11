@@ -26,7 +26,12 @@ type App struct {
 	server *http.Server
 }
 
-func New(cfg *config.Config, db *sql.DB, logger *zap.Logger, validate *validator.Validate) *App {
+func New(
+	cfg *config.Config,
+	db *sql.DB,
+	logger *zap.Logger,
+	validate *validator.Validate,
+) *App {
 
 	subRepo := psqlsubscription.NewRepository(db)
 	subSvc := servicesubscription.NewService(subRepo, logger, validate)
