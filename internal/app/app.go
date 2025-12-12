@@ -59,7 +59,7 @@ func (a *App) Run() error {
 	go func() {
 		a.logger.Info("Server starting", zap.String("addr", a.server.Addr))
 		if err := a.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			a.logger.Error("Server failed", zap.Error(err))
+			a.logger.Fatal("Server failed", zap.Error(err))
 		}
 	}()
 
