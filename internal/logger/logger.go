@@ -12,7 +12,6 @@ const (
 	Development devMode = true
 )
 
-// New creates a new zap.Logger based on the provided mode.
 func New(mode devMode) (*zap.Logger, error) {
 	if mode == Development {
 		return newDevelopmentLogger()
