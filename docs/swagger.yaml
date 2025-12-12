@@ -1,94 +1,122 @@
 basePath: /
 definitions:
-  router.HTTPError:
-    properties:
-      code:
-        description: HTTP status code
-        type: integer
-      error:
-        description: Error message
-    type: object
   types.Subscription:
     properties:
       end_date:
-        description: End date of the subscription in "MM-YYYY" format
         type: string
       id:
-        description: Unique identifier for the subscription
         type: integer
       price:
-        description: Monthly price of the subscription in USD cents or integer units
         type: integer
       service_name:
-        description: Name of the service
         type: string
       start_date:
-        description: Start date of the subscription in "MM-YYYY" format
         type: string
       user_id:
-        description: Unique identifier of the user who owns this subscription
+        type: string
+    type: object
+  types.SubscriptionCreateRequestJSON:
+    description: All fields except end_date are required. Dates must be in MM-YYYY
+      format. Price is in cents.
+    properties:
+      end_date:
+        description: |-
+          Optional end date in MM-YYYY format
+          @example "12-2025"
+        type: string
+      price:
+        description: |-
+          Price in cents (e.g., 999 = $9.99)
+          @example 999
+        type: integer
+      service_name:
+        description: |-
+          Service name (5–30 characters)
+          @example "Yandex"
+        type: string
+      start_date:
+        description: |-
+          Start date in MM-YYYY format (e.g., "03-2025")
+          @example "03-2025"
+        type: string
+      user_id:
+        description: |-
+          User UUID (must be valid)
+          @example "550e8400-e29b-41d4-a716-446655440000"
         type: string
     required:
-    - id
     - price
     - service_name
     - start_date
     - user_id
     type: object
-  types.SubscriptionCreateRequest:
-    properties:
-      end_date:
-        description: End date of the subscription in "MM-YYYY" format; optional
-        type: string
-      price:
-        description: Monthly price of the subscription in rubles
-        type: integer
-      service_name:
-        description: Name of the service
-        type: string
-      start_date:
-        description: Start date of the subscription in "MM-YYYY" format
-        type: string
-      user_id:
-        description: Unique identifier of the user who owns this subscription (uuid)
-        type: string
-    required:
-    - price
-    - service_name
-    - start_date
-    - user_id
-    type: object
-  types.SubscriptionUpdateRequest:
+  types.SubscriptionJSON:
+    description: All date fields are in MM-YYYY format. Price is in cents.
     properties:
       end_date:
         description: |-
-          EndDate is the new end date in "MM-YYYY" format (optional)
-          Example: "02-2025"
+          Optional end date in MM-YYYY format
+          @example "12-2025"
         type: string
       id:
         description: |-
-          ID is the unique identifier of the subscription to update
-          Required: yes
+          Unique numeric ID of the subscription
+          @example 123
         type: integer
       price:
         description: |-
-          Price is the new monthly price in USD cents or integer units (optional)
-          Example: 1000
+          Price in cents (e.g., 999 = $9.99)
+          @example 999
         type: integer
       service_name:
         description: |-
-          ServiceName is the new name of the service (optional)
-          Example: "Yandex Plus"
+          Name of the service (e.g., "Spotify", "Yandex Plus")
+          @example "Yandex"
         type: string
       start_date:
         description: |-
-          StartDate is the new start date in "MM-YYYY" format (optional)
-          Example: "01-2025"
+          Start date in MM-YYYY format
+          @example "03-2025"
         type: string
       user_id:
         description: |-
-          UserUUID is the new unique identifier of the user (optional)
-          Example: "123e4567-e89b-42d3-a456-556642440000"
+          User UUID associated with this subscription
+          @example "550e8400-e29b-41d4-a716-446655440000"
+        type: string
+    type: object
+  types.SubscriptionUpdateRequestJSON:
+    description: At least one field must be provided. Dates in MM-YYYY format. Price
+      in cents.
+    properties:
+      end_date:
+        description: |-
+          Optional new end date (MM-YYYY)
+          @example "11-2026"
+        type: string
+      id:
+        description: |-
+          Subscription ID (required to identify the record)
+          @example 123
+        type: integer
+      price:
+        description: |-
+          Optional new price in cents
+          @example 1299
+        type: integer
+      service_name:
+        description: |-
+          Optional new service name (5–30 characters)
+          @example "Yandex Music"
+        type: string
+      start_date:
+        description: |-
+          Optional new start date (MM-YYYY)
+          @example "04-2025"
+        type: string
+      user_id:
+        description: |-
+          Optional new user UUID
+          @example "a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8"
         type: string
     required:
     - id
@@ -99,16 +127,16 @@ info:
     email: artyomkorchagin333@gmail.com
     name: Artyom Korchagin
   title: Effective Mobile Task GO Junior
-  version: "1.0"
+  version: "2.0"
 paths:
   /subscriptions:
     get:
-      description: Retrieve a list of all subscriptions
+      description: Returns a list of all active and inactive subscriptions.
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: List of subscriptions
           schema:
             items:
               $ref: '#/definitions/types.Subscription'
@@ -116,37 +144,54 @@ paths:
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/router.HTTPError'
+            properties:
+              error:
+                type: string
+            type: object
       summary: Get all subscriptions
       tags:
-      - subscription
+      - subscriptions
     patch:
       consumes:
       - application/json
-      description: Update only the provided fields of a subscription
+      description: Updates only the provided fields of an existing subscription. All
+        fields are optional.
       parameters:
-      - description: Fields to update
+      - description: Fields to update (at least one required)
         in: body
         name: subscription
         required: true
         schema:
-          $ref: '#/definitions/types.SubscriptionUpdateRequest'
+          $ref: '#/definitions/types.SubscriptionUpdateRequestJSON'
       produces:
       - application/json
       responses:
         "200":
           description: No Content
         "400":
-          description: Bad request
+          description: Invalid input
           schema:
-            $ref: '#/definitions/router.HTTPError'
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: Subscription not found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/router.HTTPError'
+            properties:
+              error:
+                type: string
+            type: object
       summary: Partially update a subscription
       tags:
-      - subscription
+      - subscriptions
     post:
       consumes:
       - application/json
@@ -157,28 +202,35 @@ paths:
         name: subscription
         required: true
         schema:
-          $ref: '#/definitions/types.SubscriptionCreateRequest'
+          $ref: '#/definitions/types.SubscriptionCreateRequestJSON'
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: No Content
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/router.HTTPError'
+            properties:
+              error:
+                type: string
+            type: object
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/router.HTTPError'
+            properties:
+              error:
+                type: string
+            type: object
       summary: Create a subscription
       tags:
-      - subscription
+      - subscriptions
   /subscriptions/{id}:
     delete:
-      description: Delete a subscription by ID
+      description: Permanently deletes a subscription by its ID.
       parameters:
       - description: Subscription ID
+        format: int64
         in: path
         name: id
         required: true
@@ -186,23 +238,37 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "204":
           description: No Content
         "400":
-          description: Bad request
+          description: Invalid ID format
           schema:
-            $ref: '#/definitions/router.HTTPError'
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: Subscription not found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/router.HTTPError'
+            properties:
+              error:
+                type: string
+            type: object
       summary: Delete a subscription
       tags:
-      - subscription
+      - subscriptions
     get:
-      description: Retrieve a subscription by its ID
+      description: Fetches a single subscription by its numeric ID.
       parameters:
       - description: Subscription ID
+        format: int64
         in: path
         name: id
         required: true
@@ -211,37 +277,54 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Subscription details
           schema:
-            $ref: '#/definitions/types.Subscription'
+            $ref: '#/definitions/types.SubscriptionJSON'
         "400":
-          description: Bad request
+          description: Invalid ID format
           schema:
-            $ref: '#/definitions/router.HTTPError'
+            properties:
+              error:
+                type: string
+            type: object
+        "404":
+          description: Subscription not found
+          schema:
+            properties:
+              error:
+                type: string
+            type: object
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/router.HTTPError'
-      summary: Get a subscription by ID
+            properties:
+              error:
+                type: string
+            type: object
+      summary: Get subscription by ID
       tags:
-      - subscription
+      - subscriptions
   /subscriptions/sum:
     get:
-      description: Calculate the total revenue from subscriptions matching the filter
+      description: Calculates the total price (in cents) of subscriptions matching
+        the optional filters.
       parameters:
-      - description: User UUID
+      - description: Filter by user UUID
+        format: uuid
         in: query
         name: user_id
         type: string
-      - description: Service Name
+      - description: Filter by service name (min 5, max 30 chars)
         in: query
         name: service_name
         type: string
-      - description: 'Start Date (format: MM-YYYY)'
+      - description: Filter by start date
+        format: MM-YYYY
         in: query
         name: start_date
         type: string
-      - description: 'End Date (format: MM-YYYY)'
+      - description: Filter by end date
+        format: MM-YYYY
         in: query
         name: end_date
         type: string
@@ -249,18 +332,27 @@ paths:
       - application/json
       responses:
         "200":
-          description: Total sum
+          description: Total sum in cents
           schema:
-            type: integer
+            properties:
+              sum:
+                type: integer
+            type: object
         "400":
-          description: Bad request
+          description: Invalid filter parameters
           schema:
-            $ref: '#/definitions/router.HTTPError'
+            properties:
+              error:
+                type: string
+            type: object
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/router.HTTPError'
+            properties:
+              error:
+                type: string
+            type: object
       summary: Get total sum of subscriptions
       tags:
-      - subscription
+      - subscriptions
 swagger: "2.0"

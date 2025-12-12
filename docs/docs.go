@@ -20,17 +20,17 @@ const docTemplate = `{
     "paths": {
         "/subscriptions": {
             "get": {
-                "description": "Retrieve a list of all subscriptions",
+                "description": "Returns a list of all active and inactive subscriptions.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "subscription"
+                    "subscriptions"
                 ],
                 "summary": "Get all subscriptions",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "List of subscriptions",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -41,7 +41,12 @@ const docTemplate = `{
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/router.HTTPError"
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
@@ -55,7 +60,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "subscription"
+                    "subscriptions"
                 ],
                 "summary": "Create a subscription",
                 "parameters": [
@@ -65,30 +70,40 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.SubscriptionCreateRequest"
+                            "$ref": "#/definitions/types.SubscriptionCreateRequestJSON"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "No Content"
                     },
                     "400": {
                         "description": "Bad request",
                         "schema": {
-                            "$ref": "#/definitions/router.HTTPError"
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/router.HTTPError"
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
             },
             "patch": {
-                "description": "Update only the provided fields of a subscription",
+                "description": "Updates only the provided fields of an existing subscription. All fields are optional.",
                 "consumes": [
                     "application/json"
                 ],
@@ -96,17 +111,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "subscription"
+                    "subscriptions"
                 ],
                 "summary": "Partially update a subscription",
                 "parameters": [
                     {
-                        "description": "Fields to update",
+                        "description": "Fields to update (at least one required)",
                         "name": "subscription",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.SubscriptionUpdateRequest"
+                            "$ref": "#/definitions/types.SubscriptionUpdateRequestJSON"
                         }
                     }
                 ],
@@ -115,15 +130,36 @@ const docTemplate = `{
                         "description": "No Content"
                     },
                     "400": {
-                        "description": "Bad request",
+                        "description": "Invalid input",
                         "schema": {
-                            "$ref": "#/definitions/router.HTTPError"
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Subscription not found",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/router.HTTPError"
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
@@ -131,57 +167,75 @@ const docTemplate = `{
         },
         "/subscriptions/sum": {
             "get": {
-                "description": "Calculate the total revenue from subscriptions matching the filter",
+                "description": "Calculates the total price (in cents) of subscriptions matching the optional filters.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "subscription"
+                    "subscriptions"
                 ],
                 "summary": "Get total sum of subscriptions",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User UUID",
+                        "format": "uuid",
+                        "description": "Filter by user UUID",
                         "name": "user_id",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Service Name",
+                        "description": "Filter by service name (min 5, max 30 chars)",
                         "name": "service_name",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Start Date (format: MM-YYYY)",
+                        "format": "MM-YYYY",
+                        "description": "Filter by start date",
                         "name": "start_date",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "End Date (format: MM-YYYY)",
+                        "format": "MM-YYYY",
+                        "description": "Filter by end date",
                         "name": "end_date",
                         "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Total sum",
+                        "description": "Total sum in cents",
                         "schema": {
-                            "type": "integer"
+                            "type": "object",
+                            "properties": {
+                                "sum": {
+                                    "type": "integer"
+                                }
+                            }
                         }
                     },
                     "400": {
-                        "description": "Bad request",
+                        "description": "Invalid filter parameters",
                         "schema": {
-                            "$ref": "#/definitions/router.HTTPError"
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/router.HTTPError"
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
@@ -189,17 +243,18 @@ const docTemplate = `{
         },
         "/subscriptions/{id}": {
             "get": {
-                "description": "Retrieve a subscription by its ID",
+                "description": "Fetches a single subscription by its numeric ID.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "subscription"
+                    "subscriptions"
                 ],
-                "summary": "Get a subscription by ID",
+                "summary": "Get subscription by ID",
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "Subscription ID",
                         "name": "id",
                         "in": "path",
@@ -208,37 +263,59 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Subscription details",
                         "schema": {
-                            "$ref": "#/definitions/types.Subscription"
+                            "$ref": "#/definitions/types.SubscriptionJSON"
                         }
                     },
                     "400": {
-                        "description": "Bad request",
+                        "description": "Invalid ID format",
                         "schema": {
-                            "$ref": "#/definitions/router.HTTPError"
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Subscription not found",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/router.HTTPError"
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
             },
             "delete": {
-                "description": "Delete a subscription by ID",
+                "description": "Permanently deletes a subscription by its ID.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "subscription"
+                    "subscriptions"
                 ],
                 "summary": "Delete a subscription",
                 "parameters": [
                     {
                         "type": "integer",
+                        "format": "int64",
                         "description": "Subscription ID",
                         "name": "id",
                         "in": "path",
@@ -246,19 +323,40 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "204": {
                         "description": "No Content"
                     },
                     "400": {
-                        "description": "Bad request",
+                        "description": "Invalid ID format",
                         "schema": {
-                            "$ref": "#/definitions/router.HTTPError"
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Subscription not found",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal server error",
                         "schema": {
-                            "$ref": "#/definitions/router.HTTPError"
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 }
@@ -266,55 +364,31 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "router.HTTPError": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "HTTP status code",
-                    "type": "integer"
-                },
-                "error": {
-                    "description": "Error message"
-                }
-            }
-        },
         "types.Subscription": {
             "type": "object",
-            "required": [
-                "id",
-                "price",
-                "service_name",
-                "start_date",
-                "user_id"
-            ],
             "properties": {
                 "end_date": {
-                    "description": "End date of the subscription in \"MM-YYYY\" format",
                     "type": "string"
                 },
                 "id": {
-                    "description": "Unique identifier for the subscription",
                     "type": "integer"
                 },
                 "price": {
-                    "description": "Monthly price of the subscription in USD cents or integer units",
                     "type": "integer"
                 },
                 "service_name": {
-                    "description": "Name of the service",
                     "type": "string"
                 },
                 "start_date": {
-                    "description": "Start date of the subscription in \"MM-YYYY\" format",
                     "type": "string"
                 },
                 "user_id": {
-                    "description": "Unique identifier of the user who owns this subscription",
                     "type": "string"
                 }
             }
         },
-        "types.SubscriptionCreateRequest": {
+        "types.SubscriptionCreateRequestJSON": {
+            "description": "All fields except end_date are required. Dates must be in MM-YYYY format. Price is in cents.",
             "type": "object",
             "required": [
                 "price",
@@ -324,55 +398,86 @@ const docTemplate = `{
             ],
             "properties": {
                 "end_date": {
-                    "description": "End date of the subscription in \"MM-YYYY\" format; optional",
+                    "description": "Optional end date in MM-YYYY format\n@example \"12-2025\"",
                     "type": "string"
                 },
                 "price": {
-                    "description": "Monthly price of the subscription in rubles",
+                    "description": "Price in cents (e.g., 999 = $9.99)\n@example 999",
                     "type": "integer"
                 },
                 "service_name": {
-                    "description": "Name of the service",
+                    "description": "Service name (5–30 characters)\n@example \"Yandex\"",
                     "type": "string"
                 },
                 "start_date": {
-                    "description": "Start date of the subscription in \"MM-YYYY\" format",
+                    "description": "Start date in MM-YYYY format (e.g., \"03-2025\")\n@example \"03-2025\"",
                     "type": "string"
                 },
                 "user_id": {
-                    "description": "Unique identifier of the user who owns this subscription (uuid)",
+                    "description": "User UUID (must be valid)\n@example \"550e8400-e29b-41d4-a716-446655440000\"",
                     "type": "string"
                 }
             }
         },
-        "types.SubscriptionUpdateRequest": {
+        "types.SubscriptionJSON": {
+            "description": "All date fields are in MM-YYYY format. Price is in cents.",
+            "type": "object",
+            "properties": {
+                "end_date": {
+                    "description": "Optional end date in MM-YYYY format\n@example \"12-2025\"",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Unique numeric ID of the subscription\n@example 123",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "Price in cents (e.g., 999 = $9.99)\n@example 999",
+                    "type": "integer"
+                },
+                "service_name": {
+                    "description": "Name of the service (e.g., \"Spotify\", \"Yandex Plus\")\n@example \"Yandex\"",
+                    "type": "string"
+                },
+                "start_date": {
+                    "description": "Start date in MM-YYYY format\n@example \"03-2025\"",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "User UUID associated with this subscription\n@example \"550e8400-e29b-41d4-a716-446655440000\"",
+                    "type": "string"
+                }
+            }
+        },
+        "types.SubscriptionUpdateRequestJSON": {
+            "description": "At least one field must be provided. Dates in MM-YYYY format. Price in cents.",
             "type": "object",
             "required": [
                 "id"
             ],
             "properties": {
                 "end_date": {
-                    "description": "EndDate is the new end date in \"MM-YYYY\" format (optional)\nExample: \"02-2025\"",
+                    "description": "Optional new end date (MM-YYYY)\n@example \"11-2026\"",
                     "type": "string"
                 },
                 "id": {
-                    "description": "ID is the unique identifier of the subscription to update\nRequired: yes",
+                    "description": "Subscription ID (required to identify the record)\n@example 123",
                     "type": "integer"
                 },
                 "price": {
-                    "description": "Price is the new monthly price in USD cents or integer units (optional)\nExample: 1000",
+                    "description": "Optional new price in cents\n@example 1299",
                     "type": "integer"
                 },
                 "service_name": {
-                    "description": "ServiceName is the new name of the service (optional)\nExample: \"Yandex Plus\"",
+                    "description": "Optional new service name (5–30 characters)\n@example \"Yandex Music\"",
                     "type": "string"
                 },
                 "start_date": {
-                    "description": "StartDate is the new start date in \"MM-YYYY\" format (optional)\nExample: \"01-2025\"",
+                    "description": "Optional new start date (MM-YYYY)\n@example \"04-2025\"",
                     "type": "string"
                 },
                 "user_id": {
-                    "description": "UserUUID is the new unique identifier of the user (optional)\nExample: \"123e4567-e89b-42d3-a456-556642440000\"",
+                    "description": "Optional new user UUID\n@example \"a1b2c3d4-e5f6-7890-g1h2-i3j4k5l6m7n8\"",
                     "type": "string"
                 }
             }
@@ -382,7 +487,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "2.0",
 	Host:             "localhost:3000",
 	BasePath:         "/",
 	Schemes:          []string{},
