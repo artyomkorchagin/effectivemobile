@@ -1,29 +1,15 @@
-# Задание для Effectivemobile
+# Effectivemobile — Golang Junior Task
 
-RESTful API для управления подписками пользователей, реализованный на Go, с использованием Gin, PostgreSQL и документации через Swagger.
+RESTful API для управления подписками пользователей, реализованный на Go с использованием Gin, PostgreSQL и автоматической документацией через Swagger.
 
-Этот сервис поддерживает:
-- Операции CRUDL для подписок
-- Фильтрацию и подсчёт суммы подписок
-- Документацию API через Swagger
-- Запуск через Docker
-- Инициализация базы данных через миграции
+Сервис поддерживает полный жизненный цикл подписок: создание, чтение, обновление, удаление, фильтрацию и агрегацию данных.
 
 ---
 
 ## Требования
 
 - Docker и Docker Compose
-- Go 1.23
 - Установленный `make`
-- `swag`
-
-Установите `swag`:
-
-```bash
-go install github.com/swaggo/swag/cmd/swag@latest
-```
-
 ---
 
 ## Начало работы
@@ -59,13 +45,17 @@ http://localhost:3000/swagger/index.html
 
 ## Доступные команды Make
 
-| Команда        | Описание                           |
-|----------------|------------------------------------|
-| `make build`   | Собрать Docker-образы              |
-| `make up`      | Запустить всю инфраструктуру       |
-| `make down`    | Остановить и удалить контейнеры    |
-| `make restart` | Пересобрать и перезапустить всё    |
-| `make clean`   | Очистить Docker артефакты          |
+| Команда           | Описание                                                                 |
+|-------------------|--------------------------------------------------------------------------|
+| `make build`      | Собирает Docker-образы с флагом `--no-cache`            |
+| `make up`         | Запускает все сервисы в фоновом режиме                          |
+| `make down`       | Останавливает и удаляет контейнеры                                      |
+| `make restart`    | Полный перезапуск: остановка → пересборка → запуск                      |
+| `make run`        | Запускает сервисы в foreground-режиме                             |
+| `make test`       | Запускает unit-тесты во всех пакетах проекта                            |
+| `make cover`      | Генерирует HTML-отчёт о покрытии кода тестами                           |
+| `make clean`      | Полная очистка: остановка контейнеров, удаление томов и образов         |
+| `make clean-volumes` | Удаляет все неиспользуемые Docker-тома                              |
 
 ---
 
@@ -75,7 +65,7 @@ http://localhost:3000/swagger/index.html
 |--------|---------------------------|----------------------------------|
 | POST   | `/subscriptions`          | Создать новую подписку           |
 | GET    | `/subscriptions/{id}`     | Получить подписку по ID          |
-| PATCH  | `/subscriptions/{id}`     | Частично обновить подписку       |
+| PATCH  | `/subscriptions`          | Частично обновить подписку       |
 | DELETE | `/subscriptions/{id}`     | Удалить подписку                 |
 | GET    | `/subscriptions`          | Получить список всех подписок    |
 | GET    | `/subscriptions/sum`      | Получить сумму подписок          |
@@ -84,13 +74,15 @@ http://localhost:3000/swagger/index.html
 
 ---
 
-## Пример запроса (PATCH)
+## Пример запроса (POST)
 
 ```json
 {
-  "service_name": "Netflix",
-  "price": 1000,
-  "start_date": "01-2025"
+  "service_name": "Yandex Plus",
+  "price": 999,
+  "user_id": "550e8400-e29b-41d4-a716-446655440000",
+  "start_date": "01-2025",
+  "end_date": "12-2025"
 }
 ```
 
@@ -99,14 +91,7 @@ http://localhost:3000/swagger/index.html
 ## Пример ответа
 
 ```json
-{
-  "id": 1,
-  "service_name": "Netflix",
-  "price": 1000,
-  "user_id": "123e4567-e89b-42d3-a456-556642440000",
-  "start_date": "01-2025",
-  "end_date": null
-}
+  null
 ```
 
 ---
@@ -115,8 +100,7 @@ http://localhost:3000/swagger/index.html
 
 ```json
 {
-  "code": 400,
-  "error": "invalid ID"
+  "error": "end date must be after start date"
 }
 ```
 
