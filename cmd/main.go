@@ -16,7 +16,7 @@ import (
 )
 
 // @title			Effective Mobile Task GO Junior
-// @version			1.0
+// @version			2.0
 // @contact.name	Artyom Korchagin
 // @contact.email	artyomkorchagin333@gmail.com
 // @host			localhost:3000
