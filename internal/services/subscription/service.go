@@ -38,7 +38,7 @@ func (s *Service) CreateSubscription(ctx context.Context, scr *types.Subscriptio
 	return s.repo.CreateSubscription(ctx, scr)
 }
 
-func (s *Service) DeleteSubscription(ctx context.Context, subscriptionID uint64) error {
+func (s *Service) DeleteSubscription(ctx context.Context, subscriptionID int64) error {
 	if err := s.repo.DeleteSubscription(ctx, subscriptionID); err != nil {
 		return err
 	}
@@ -50,16 +50,20 @@ func (s *Service) GetAllSubscriptions(ctx context.Context) ([]*types.Subscriptio
 	return s.repo.GetAllSubscriptions(ctx)
 }
 
-func (s *Service) GetSubscription(ctx context.Context, subscriptionID uint64) (*types.Subscription, error) {
+func (s *Service) GetSubscription(ctx context.Context, subscriptionID int64) (*types.Subscription, error) {
 	return s.repo.GetSubscription(ctx, subscriptionID)
 }
 
-func (s *Service) GetSumOfSubscriptions(ctx context.Context, filter *types.Filter) (uint, error) {
+func (s *Service) GetSumOfSubscriptions(ctx context.Context, filter *types.Filter) (int64, error) {
 
 	if err := s.validate.Struct(filter); err != nil {
 		return 0, types.ErrBadRequest(err)
 	}
-
+	if filter.EndDate != nil && filter.StartDate != nil {
+		if filter.EndDate.Before(*filter.StartDate) {
+			return 0, types.ErrBadRequest(fmt.Errorf("end date must be after start date"))
+		}
+	}
 	return s.repo.GetSumOfSubscriptions(ctx, filter)
 }
 

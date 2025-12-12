@@ -8,13 +8,13 @@ import (
 
 type Reader interface {
 	GetAllSubscriptions(ctx context.Context) ([]*types.Subscription, error)
-	GetSubscription(ctx context.Context, subscriptionID uint64) (*types.Subscription, error)
-	GetSumOfSubscriptions(ctx context.Context, filter *types.Filter) (uint, error)
+	GetSubscription(ctx context.Context, subscriptionID int64) (*types.Subscription, error)
+	GetSumOfSubscriptions(ctx context.Context, filter *types.Filter) (int64, error)
 }
 
 type Writer interface {
 	CreateSubscription(ctx context.Context, scr *types.SubscriptionCreateRequest) error
-	DeleteSubscription(ctx context.Context, subscriptionID uint64) error
+	DeleteSubscription(ctx context.Context, subscriptionID int64) error
 	UpdateSubscription(ctx context.Context, sur *types.SubscriptionUpdateRequest) error
 }
 

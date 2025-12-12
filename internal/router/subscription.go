@@ -12,13 +12,13 @@ import (
 // CreateSubscription godoc
 // @Summary      Create a subscription
 // @Description  Create a new subscription
-// @Tags         subscription
+// @Tags         subscriptions
 // @Accept       json
 // @Produce      json
-// @Param        subscription  body      types.SubscriptionCreateRequest  true  "Create subscription"
-// @Success      200  "No Content"
-// @Failure      400  {object}  HTTPError "Bad request"
-// @Failure      500  {object}  HTTPError "Internal server error"
+// @Param        subscription  body types.SubscriptionCreateRequestJSON  true  "Create subscription"
+// @Success      201  "No Content"
+// @Failure      400  {object}  object{error=string} "Bad request"
+// @Failure      500  {object}  object{error=string} "Internal server error"
 // @Router       /subscriptions [post]
 func (h *Handler) createSubscription(c *gin.Context) error {
 	var scrj types.SubscriptionCreateRequestJSON
@@ -37,24 +37,24 @@ func (h *Handler) createSubscription(c *gin.Context) error {
 	}
 
 	h.logger.Info("Successfully created subscription", zap.Any("subscription create request", scr))
-	c.JSON(http.StatusOK, nil)
+	c.JSON(http.StatusCreated, nil)
 	return nil
 }
 
 // GetSubscription godoc
-// @Summary      Get a subscription by ID
-// @Description  Retrieve a subscription by its ID
-// @Tags         subscription
-// @Produce      json
-// @Param        id   path    int     true  "Subscription ID"
-// @Success      200  {object}  types.Subscription
-// @Failure      400  {object}  HTTPError "Bad request"
-// @Failure      404  {object}  HTTPError "Not found"
-// @Failure      500  {object}  HTTPError "Internal server error"
-// @Router       /subscriptions/{id} [get]
+// @Summary Get subscription by ID
+// @Description Fetches a single subscription by its numeric ID.
+// @Tags subscriptions
+// @Produce json
+// @Param id path int64 true "Subscription ID"
+// @Success 200 {object} types.SubscriptionJSON "Subscription details"
+// @Failure 400 {object} object{error=string} "Invalid ID format"
+// @Failure 404 {object} object{error=string} "Subscription not found"
+// @Failure 500 {object} object{error=string} "Internal server error"
+// @Router /subscriptions/{id} [get]
 func (h *Handler) getSubscription(c *gin.Context) error {
 	idRaw := c.Param("id")
-	id, err := strconv.ParseUint(idRaw, 10, 64)
+	id, err := strconv.ParseInt(idRaw, 10, 64)
 
 	if err != nil {
 		return types.ErrBadRequest(err)
@@ -65,24 +65,24 @@ func (h *Handler) getSubscription(c *gin.Context) error {
 		return err
 	}
 
-	h.logger.Info("Successfuly got subscription", zap.Uint64("id", id))
-
-	c.JSON(http.StatusOK, sub)
+	h.logger.Info("Successfuly got subscription", zap.Int64("id", id))
+	subj := types.NewSubscriptionJSON(*sub)
+	c.JSON(http.StatusOK, subj)
 	return nil
 }
 
 // UpdateSubscription godoc
-// @Summary      Partially update a subscription
-// @Description  Update only the provided fields of a subscription
-// @Tags         subscription
-// @Accept       json
-// @Produce      json
-// @Param        subscription body    types.SubscriptionUpdateRequest  true  "Fields to update"
-// @Success      200  "No Content"
-// @Failure      400  {object}  HTTPError "Bad request"
-// @Failure      404  {object}  HTTPError "Not found"
-// @Failure      500  {object}  HTTPError "Internal server error"
-// @Router       /subscriptions [patch]
+// @Summary Partially update a subscription
+// @Description Updates only the provided fields of an existing subscription. All fields are optional.
+// @Tags subscriptions
+// @Accept json
+// @Produce json
+// @Param subscription body types.SubscriptionUpdateRequestJSON true "Fields to update (at least one required)"
+// @Success 200 "No Content"
+// @Failure 400 {object} object{error=string} "Invalid input"
+// @Failure 404 {object} object{error=string} "Subscription not found"
+// @Failure 500 {object} object{error=string} "Internal server error"
+// @Router /subscriptions [patch]
 func (h *Handler) updateSubscription(c *gin.Context) error {
 	var surj types.SubscriptionUpdateRequestJSON
 
@@ -105,19 +105,19 @@ func (h *Handler) updateSubscription(c *gin.Context) error {
 }
 
 // DeleteSubscription godoc
-// @Summary      Delete a subscription
-// @Description  Delete a subscription by ID
-// @Tags         subscription
-// @Produce      json
-// @Param        id   path    int     true  "Subscription ID"
-// @Success      200  "No Content"
-// @Failure      400  {object}  HTTPError "Bad request"
-// @Failure      404  {object}  HTTPError "Not found"
-// @Failure      500  {object}  HTTPError "Internal server error"
-// @Router       /subscriptions/{id} [delete]
+// @Summary Delete a subscription
+// @Description Permanently deletes a subscription by its ID.
+// @Tags subscriptions
+// @Produce json
+// @Param id path int64 true "Subscription ID"
+// @Success 204 "No Content"
+// @Failure 400 {object} object{error=string} "Invalid ID format"
+// @Failure 404 {object} object{error=string} "Subscription not found"
+// @Failure 500 {object} object{error=string} "Internal server error"
+// @Router /subscriptions/{id} [delete]
 func (h *Handler) deleteSubscription(c *gin.Context) error {
 	idRaw := c.Param("id")
-	id, err := strconv.ParseUint(idRaw, 10, 64)
+	id, err := strconv.ParseInt(idRaw, 10, 64)
 	if err != nil {
 		return types.ErrBadRequest(err)
 	}
@@ -125,46 +125,53 @@ func (h *Handler) deleteSubscription(c *gin.Context) error {
 	if err := h.subscriptionService.DeleteSubscription(c, id); err != nil {
 		return err
 	}
-	h.logger.Info("Deleted subscription successfully: ", zap.Uint64("id", id))
-	c.JSON(http.StatusOK, nil)
+	h.logger.Info("Deleted subscription successfully: ", zap.Int64("id", id))
+	c.JSON(http.StatusNoContent, nil)
 	return nil
 }
 
 // GetAllSubscriptions godoc
-// @Summary      Get all subscriptions
-// @Description  Retrieve a list of all subscriptions
-// @Tags         subscription
-// @Produce      json
-// @Success      200  {array}  types.Subscription
-// @Failure      500  {object}  HTTPError "Internal server error"
-// @Router       /subscriptions [get]
+// GetAllSubscriptions retrieves all subscriptions.
+// @Summary Get all subscriptions
+// @Description Returns a list of all active and inactive subscriptions.
+// @Tags subscriptions
+// @Produce json
+// @Success 200 {array} types.Subscription "List of subscriptions"
+// @Failure 500 {object} object{error=string} "Internal server error"
+// @Router /subscriptions [get]
 func (h *Handler) getAllSubscriptions(c *gin.Context) error {
 	subs, err := h.subscriptionService.GetAllSubscriptions(c)
 	if err != nil {
 		return err
 	}
 	h.logger.Info("Got all subscriptions successfully", zap.Any("subscriptions", subs))
-	c.JSON(http.StatusOK, subs)
+
+	subsj := make([]*types.SubscriptionJSON, len(subs))
+	for i, sub := range subs {
+		subsj[i] = types.NewSubscriptionJSON(*sub)
+	}
+	h.logger.Info("Transformed subscriptions to json", zap.Any("subscriptionsJSON", subsj))
+	c.JSON(http.StatusOK, subsj)
 	return nil
 }
 
 // GetSumOfSubscriptions godoc
-// @Summary      Get total sum of subscriptions
-// @Description  Calculate the total revenue from subscriptions matching the filter
-// @Tags         subscription
-// @Produce      json
-// @Param        user_id     query    string  false  "User UUID"
-// @Param        service_name  query  string  false  "Service Name"
-// @Param        start_date  query  string  false  "Start Date (format: MM-YYYY)"
-// @Param        end_date    query  string  false  "End Date (format: MM-YYYY)"
-// @Success      200  {object}  int "Total sum"
-// @Failure      400  {object}  HTTPError "Bad request"
-// @Failure      500  {object}  HTTPError "Internal server error"
-// @Router       /subscriptions/sum [get]
+// @Summary Get total sum of subscriptions
+// @Description Calculates the total price (in cents) of subscriptions matching the optional filters.
+// @Tags subscriptions
+// @Produce json
+// @Param user_id query string false "Filter by user UUID" Format(uuid)
+// @Param service_name query string false "Filter by service name (min 5, max 30 chars)"
+// @Param start_date query string false "Filter by start date" Format(MM-YYYY)
+// @Param end_date query string false "Filter by end date" Format(MM-YYYY)
+// @Success 200 {object} object{sum=int} "Total sum in cents"
+// @Failure 400 {object} object{error=string} "Invalid filter parameters"
+// @Failure 500 {object} object{error=string} "Internal server error"
+// @Router /subscriptions/sum [get]
 func (h *Handler) getSumOfSubscriptions(c *gin.Context) error {
-	fj := types.FilterJSON{}
+	fj := types.FilterQuery{}
 
-	if err := c.Bind(&fj); err != nil {
+	if err := c.BindQuery(&fj); err != nil {
 		return types.ErrBadRequest(err)
 	}
 
@@ -172,12 +179,12 @@ func (h *Handler) getSumOfSubscriptions(c *gin.Context) error {
 	if err != nil {
 		return types.ErrBadRequest(err)
 	}
-
+	h.logger.Info("Parsed this filter", zap.Any("filter", filter))
 	sum, err := h.subscriptionService.GetSumOfSubscriptions(c, filter)
 	if err != nil {
 		return err
 	}
-	h.logger.Info("Got sum of subscriptions successfully", zap.Uint("sum", sum))
+	h.logger.Info("Got sum of subscriptions successfully", zap.Int64("sum", sum))
 	c.JSON(http.StatusOK, gin.H{"sum": sum})
 	return nil
 }

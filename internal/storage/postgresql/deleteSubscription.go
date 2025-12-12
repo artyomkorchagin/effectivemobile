@@ -8,7 +8,7 @@ import (
 	"github.com/doug-martin/goqu/v9"
 )
 
-func (r *Repository) DeleteSubscription(ctx context.Context, subscriptionID uint64) error {
+func (r *Repository) DeleteSubscription(ctx context.Context, subscriptionID int64) error {
 
 	sql, args, err := goqu.Delete("subscriptions").
 		Where(goqu.C("id").Eq(subscriptionID)).

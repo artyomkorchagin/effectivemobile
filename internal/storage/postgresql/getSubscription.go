@@ -10,7 +10,7 @@ import (
 	"github.com/doug-martin/goqu/v9"
 )
 
-func (r *Repository) GetSubscription(ctx context.Context, subscriptionID uint64) (*types.Subscription, error) {
+func (r *Repository) GetSubscription(ctx context.Context, subscriptionID int64) (*types.Subscription, error) {
 
 	var sub types.Subscription
 

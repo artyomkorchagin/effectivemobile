@@ -7,7 +7,7 @@ import (
 	"github.com/doug-martin/goqu/v9"
 )
 
-func (r *Repository) GetSumOfSubscriptions(ctx context.Context, filter *types.Filter) (uint, error) {
+func (r *Repository) GetSumOfSubscriptions(ctx context.Context, filter *types.Filter) (int64, error) {
 
 	priceSeriesExpr := goqu.L(
 		`"price" * (SELECT COUNT(*) FROM generate_series(
@@ -40,7 +40,7 @@ func (r *Repository) GetSumOfSubscriptions(ctx context.Context, filter *types.Fi
 		return 0, err
 	}
 
-	var sum uint
+	var sum int64
 	err = r.db.QueryRowContext(ctx, query, args...).Scan(&sum)
 	return sum, err
 }
