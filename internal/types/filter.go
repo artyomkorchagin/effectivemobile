@@ -8,11 +8,11 @@ import (
 	"github.com/google/uuid"
 )
 
-type FilterJSON struct {
-	UserUUID    string `json:"user_id" binding:"omitempty,uuid"`
-	ServiceName string `json:"service_name" binding:"omitempty,min=5,max=30"`
-	StartDate   string `json:"start_date" binding:"omitempty,month_year"`
-	EndDate     string `json:"end_date" binding:"omitempty,month_year"`
+type FilterQuery struct {
+	UserUUID    string `form:"user_id" binding:"omitempty,uuid"`
+	ServiceName string `form:"service_name" binding:"omitempty,min=5,max=30"`
+	StartDate   string `form:"start_date" binding:"omitempty,month_year"`
+	EndDate     string `form:"end_date" binding:"omitempty,month_year"`
 }
 
 type Filter struct {
@@ -22,10 +22,10 @@ type Filter struct {
 	EndDate     *time.Time
 }
 
-func NewFilter(fj FilterJSON) (*Filter, error) {
+func NewFilter(fq FilterQuery) (*Filter, error) {
 	var userUUID *uuid.UUID
-	if fj.UserUUID != "" {
-		id, err := uuid.Parse(fj.UserUUID)
+	if fq.UserUUID != "" {
+		id, err := uuid.Parse(fq.UserUUID)
 		if err != nil {
 			return nil, ErrBadRequest(fmt.Errorf("invalid user_id: %w", err))
 		}
@@ -33,13 +33,13 @@ func NewFilter(fj FilterJSON) (*Filter, error) {
 	}
 
 	var serviceName *string
-	if fj.ServiceName != "" {
-		serviceName = &fj.ServiceName
+	if fq.ServiceName != "" {
+		serviceName = &fq.ServiceName
 	}
 
 	var startDate *time.Time
-	if fj.StartDate != "" {
-		t, err := helpers.ParseTime(fj.StartDate)
+	if fq.StartDate != "" {
+		t, err := helpers.ParseTime(fq.StartDate)
 		if err != nil {
 			return nil, ErrBadRequest(fmt.Errorf("invalid start_date: %w", err))
 		}
@@ -47,8 +47,8 @@ func NewFilter(fj FilterJSON) (*Filter, error) {
 	}
 
 	var endDate *time.Time
-	if fj.EndDate != "" {
-		t, err := helpers.ParseTime(fj.EndDate)
+	if fq.EndDate != "" {
+		t, err := helpers.ParseTime(fq.EndDate)
 		if err != nil {
 			return nil, ErrBadRequest(fmt.Errorf("invalid end_date: %w", err))
 		}
